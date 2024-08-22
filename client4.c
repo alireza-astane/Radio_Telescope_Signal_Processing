@@ -110,6 +110,9 @@ void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, 
     unwrapped_phase2[0] = phase2[0];
 
 
+    __m256d sum_vec = _mm256_setzero_pd();
+    int i;
+
     // Process in chunks of VECTOR_SIZE
     for (int i = 1; i < N; i += VECTOR_SIZE) {
         __m256d phase_vec1 = _mm256_loadu_pd(&phase1[i]);
@@ -149,8 +152,16 @@ void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, 
 
 
         // Store the result
-        _mm256_storeu_pd(&unwrapped_phase1[i], unwrapped_vec1);
-        _mm256_storeu_pd(&unwrapped_phase2[i], unwrapped_vec2);
+        // _mm256_storeu_pd(&unwrapped_phase1[i], unwrapped_vec1);
+        // _mm256_storeu_pd(&unwrapped_phase2[i], unwrapped_vec2);
+
+
+        // __m256d data_vec1 = _mm256_loadu_pd(&unwrapped_phase1[i]);
+        // __m256d data_vec2 = _mm256_loadu_pd(&unwrapped_phase2[i]);
+
+        __m256d diff_avx = _mm256_sub_pd(unwrapped_vec1,unwrapped_vec2);
+
+        sum_vec = _mm256_add_pd(sum_vec, diff_avx);
 
     }
 
@@ -163,19 +174,18 @@ void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, 
 
     // diff and mean 
 
-    __m256d sum_vec = _mm256_setzero_pd();
-    int i;
+  
 
 
-    // Process elements in chunks of VECTOR_SIZE
-    for (i = 1; i < N ; i += VECTOR_SIZE) {
-        __m256d data_vec1 = _mm256_loadu_pd(&unwrapped_phase1[i]);
-        __m256d data_vec2 = _mm256_loadu_pd(&unwrapped_phase2[i]);
+    // // Process elements in chunks of VECTOR_SIZE
+    // for (i = 1; i < N ; i += VECTOR_SIZE) {    // i=0 ; i<= N - VECTOR_SIZE
+    //     __m256d data_vec1 = _mm256_loadu_pd(&unwrapped_phase1[i]);
+    //     __m256d data_vec2 = _mm256_loadu_pd(&unwrapped_phase2[i]);
 
-        __m256d diff_avx = _mm256_sub_pd(data_vec1,data_vec2);
+    //     __m256d diff_avx = _mm256_sub_pd(data_vec1,data_vec2);
 
-        sum_vec = _mm256_add_pd(sum_vec, diff_avx);
-    }
+    //     sum_vec = _mm256_add_pd(sum_vec, diff_avx);
+    // }  
 
     // Horizontal sum to get the total sum
     double sum[4];
