@@ -61,30 +61,30 @@ void unwrap_phases_avx(double* phases, double* unwrapped, int n) {
     }
 }
 
-// Function to compute the mean of an array using AVX
-double mean_avx(double* array, int n) {
-    __m256d sum_vec = _mm256_setzero_pd();
-    int i;
+// // Function to compute the mean of an array using AVX
+// double mean_avx(double* array, int n) {
+//     __m256d sum_vec = _mm256_setzero_pd();
+//     int i;
 
-    // Process elements in chunks of VECTOR_SIZE
-    for (i = 0; i <= n - VECTOR_SIZE; i += VECTOR_SIZE) {
-        __m256d data_vec = _mm256_loadu_pd(&array[i]);
-        sum_vec = _mm256_add_pd(sum_vec, data_vec);
-    }
+//     // Process elements in chunks of VECTOR_SIZE
+//     for (i = 0; i <= n - VECTOR_SIZE; i += VECTOR_SIZE) {
+//         __m256d data_vec = _mm256_loadu_pd(&array[i]);
+//         sum_vec = _mm256_add_pd(sum_vec, data_vec);
+//     }
 
-    // Horizontal sum to get the total sum
-    double sum[4];
-    _mm256_storeu_pd(sum, sum_vec);
+//     // Horizontal sum to get the total sum
+//     double sum[4];
+//     _mm256_storeu_pd(sum, sum_vec);
 
-    double total_sum = sum[0] + sum[1] + sum[2] + sum[3];
+//     double total_sum = sum[0] + sum[1] + sum[2] + sum[3];
 
-    // Handle any remaining elements
-    for (; i < n; ++i) {
-        total_sum += array[i];
-    }
+//     // Handle any remaining elements
+//     for (; i < n; ++i) {
+//         total_sum += array[i];
+//     }
 
-    return total_sum / n;
-}
+//     return total_sum / n;
+// }
 
     cplx *H;
     
@@ -161,24 +161,96 @@ void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, 
     
     for (int i = 0; i < N; ++i) {
         phase1[i] = carg(analytic_signal1[i]);
-        phase1[i] = carg(analytic_signal2[i]);
+        phase2[i] = carg(analytic_signal2[i]);
 
     }
     double unwrapped_phase1[N];
     double unwrapped_phase2[N];
 
 
-    unwrap_phases_avx(phase1,unwrapped_phase1,N);
-    unwrap_phases_avx(phase1,unwrapped_phase2,N);
+    // unwrap 
+    __m256d pi = _mm256_set1_pd(M_PI);
+    __m256d neg_pi = _mm256_set1_pd(-M_PI);
 
-    double diff[N];
+    // Initialize the first value
+    unwrapped_phase1[0] = phase1[0];
+    unwrapped_phase2[0] = phase2[0];
 
-    for (size_t i = 0; i < N; i++)
-    {
-        diff[i] = unwrapped_phase2[i] - unwrapped_phase1[i];
+
+    // Process in chunks of VECTOR_SIZE
+    for (int i = 1; i < N; i += VECTOR_SIZE) {
+        __m256d phase_vec1 = _mm256_loadu_pd(&phase1[i]);
+        __m256d phase_vec2 = _mm256_loadu_pd(&phase2[i]);
+
+        __m256d prev_unwrapped_vec1 = _mm256_set1_pd(unwrapped_phase1[i - 1]);
+        __m256d prev_unwrapped_vec2 = _mm256_set1_pd(unwrapped_phase2[i - 1]);
+
+
+        // Compute phase differences
+        __m256d delta1 = _mm256_sub_pd(phase_vec1, prev_unwrapped_vec1);
+        __m256d delta2 = _mm256_sub_pd(phase_vec2, prev_unwrapped_vec2);
+
+        // Unwrap phases: ensure delta is within [-π, π]
+        __m256d mask1 = _mm256_cmp_pd(delta1, pi, _CMP_GT_OS);
+        __m256d mask2 = _mm256_cmp_pd(delta2, pi, _CMP_GT_OS);
+
+        __m256d adjustment1 = _mm256_blendv_pd(neg_pi, pi, mask1);
+        __m256d adjustment2 = _mm256_blendv_pd(neg_pi, pi, mask2);
+
+        delta1 = _mm256_sub_pd(delta1, adjustment1);
+        delta2 = _mm256_sub_pd(delta2, adjustment2);
+
+
+        mask1 = _mm256_cmp_pd(delta1, neg_pi, _CMP_LT_OS);
+        mask2 = _mm256_cmp_pd(delta2, neg_pi, _CMP_LT_OS);
+
+        adjustment1 = _mm256_blendv_pd(pi, neg_pi, mask1);
+        adjustment2 = _mm256_blendv_pd(pi, neg_pi, mask2);
+
+        delta1 = _mm256_add_pd(delta1, adjustment1);
+        delta2 = _mm256_add_pd(delta2, adjustment2);
+
+        // Compute the unwrapped values
+        __m256d unwrapped_vec1 = _mm256_add_pd(prev_unwrapped_vec1, delta1);
+        __m256d unwrapped_vec2 = _mm256_add_pd(prev_unwrapped_vec2, delta2);
+
+
+        // Store the result
+        _mm256_storeu_pd(&unwrapped_phase1[i], unwrapped_vec1);
+        _mm256_storeu_pd(&unwrapped_phase2[i], unwrapped_vec2);
+
     }
-        
-    means_phase_diff = mean_avx(diff,N);
+
+
+
+
+    // unwrap_phases_avx(phase1,unwrapped_phase1,N);
+    // unwrap_phases_avx(phase2,unwrapped_phase2,N);
+
+
+    // diff and mean 
+
+    __m256d sum_vec = _mm256_setzero_pd();
+    int i;
+
+
+    // Process elements in chunks of VECTOR_SIZE
+    for (i = 0; i <= N - VECTOR_SIZE; i += VECTOR_SIZE) {
+        __m256d data_vec1 = _mm256_loadu_pd(&unwrapped_phase1[i]);
+        __m256d data_vec2 = _mm256_loadu_pd(&unwrapped_phase2[i]);
+
+        __m256d diff_avx = _mm256_sub_pd(data_vec1,data_vec2);
+
+        sum_vec = _mm256_add_pd(sum_vec, diff_avx);
+    }
+
+    // Horizontal sum to get the total sum
+    double sum[4];
+    _mm256_storeu_pd(sum, sum_vec);
+
+    double total_sum = sum[0] + sum[1] + sum[2] + sum[3];
+
+    means_phase_diff =  total_sum / N;
 
 }
 
