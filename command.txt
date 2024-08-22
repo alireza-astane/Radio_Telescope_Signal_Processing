@@ -1,0 +1,2 @@
+gcc -o cleint4 client4.c -lfftw3 -lm -mavx
+gcc -o server2  server2.c -lm -lpthread

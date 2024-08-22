@@ -24,8 +24,6 @@ typedef struct {
     pthread_mutex_t buffer_mutex;
 } connection_info;
 
-
-
 #define VECTOR_SIZE 4 // AVX2 processes 4 doubles at a time
 
 
@@ -88,202 +86,31 @@ double mean_avx(double* array, int n) {
     return total_sum / n;
 }
 
+// // Function to perform FFT using FFTW3 with double complex arrays  commented !!!!!
+// void compute_fft(double complex* input, double complex* output, int n) {
+//     fftw_plan plan;
+//     // Create a plan for the FFT
+//     plan = fftw_plan_dft_1d(n, input, output, FFTW_FORWARD, FFTW_ESTIMATE);
+//     // Execute the FFT
+//     fftw_execute(plan);
+//     // Destroy the FFT plan
+//     fftw_destroy_plan(plan);
+// }
 
-// double mean(double* array, int n) {
-//     double sum = 0.0;
+// // Function to perform IFFT using FFTW3 with double complex arrays
+// void compute_ifft(double complex* input, double complex* output, int n) {
+//     fftw_plan plan;
+//     plan = fftw_plan_dft_1d(n, input, output, FFTW_BACKWARD, FFTW_ESTIMATE);
+//     // Execute the IFFT
+//     fftw_execute(plan);
+
+//     // Convert fftw_complex to double complex and normalize the result
 //     for (int i = 0; i < n; ++i) {
-//         sum += array[i];
+//         // output[i] = creal(fftw_output[i])+ I * cimag(fftw_output[i]); commented!!!
+//         output[i] /= n; // Normalize the result
 //     }
-//     return sum / n;
-// }
-
-// Function to perform FFT using FFTW3 with double complex arrays  commented !!!!!
-void compute_fft(double complex* input, double complex* output, int n) {
-    fftw_plan plan;
-    // fftw_complex* fftw_input = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * n);
-    // fftw_complex* fftw_output = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * n);
-
-    // Convert double complex to fftw_complex
-    // for (int i = 0; i < n; ++i) {
-    //     fftw_input[i] = creal(input[i]) + I * cimag(input[i]);
-    // }
-
-    // Create a plan for the FFT
-    plan = fftw_plan_dft_1d(n, input, output, FFTW_FORWARD, FFTW_ESTIMATE);
-
-    // Execute the FFT
-    fftw_execute(plan);
-
-    // Convert fftw_complex to double complex
-    // for (int i = 0; i < n; ++i) {
-    //     output[i] = fftw_output[i];
-    // }
-
-    // Destroy the FFT plan
-    fftw_destroy_plan(plan);
-
-    // Free the temporary FFTW arrays
-    // fftw_free(fftw_input);
-    // fftw_free(fftw_output);
-}
-
-// Function to perform IFFT using FFTW3 with double complex arrays
-void compute_ifft(double complex* input, double complex* output, int n) {
-    fftw_plan plan;
-    // cplx* fftw_input = (cplx*) fftw_malloc(sizeof(cplx) * n);
-    // cplx* fftw_output = (cplx*) fftw_malloc(sizeof(cplx) * n);
-
-    // // Convert double complex to fftw_complex
-    // for (int i = 0; i < n; ++i) {
-    //     fftw_input[i] = creal(input[i]) + I * cimag(input[i]);
-    // }
-
-    // Create a plan for the IFFT
-    // plan = fftw_plan_dft_1d(n, fftw_input, fftw_output, FFTW_BACKWARD, FFTW_ESTIMATE);
-    plan = fftw_plan_dft_1d(n, input, output, FFTW_BACKWARD, FFTW_ESTIMATE);
-
-
-    // Execute the IFFT
-    fftw_execute(plan);
-
-    // Convert fftw_complex to double complex and normalize the result
-    for (int i = 0; i < n; ++i) {
-        // output[i] = creal(fftw_output[i])+ I * cimag(fftw_output[i]); commented!!!
-        output[i] /= n; // Normalize the result
-    }
-
-    // Destroy the FFT plan
-    fftw_destroy_plan(plan);
-
-    // Free the temporary FFTW arrays
-    // fftw_free(fftw_input); commented!!!!
-    // fftw_free(fftw_output);
-}
-
-// // Recursive FFT function
-// void fft(cplx *buf, cplx *out, int N) {
-//     if (N <= 1)
-//         for (int i = 0; i < N; i++)
-//         {
-//             out[i] = buf[i];
-//         }
-
-//     else{
-//         cplx buf_even[N/2];
-//         cplx buf_odd[N/2];
-//         cplx even[N/2];
-//         cplx odd[N/2];
-
-//         for (int i = 0; i < N/2; i++)
-//         {
-//             buf_even[i] = buf[2*i];
-//             buf_odd[i] = buf[2*i + 1];
-//         }
-//         fft(buf_even,even,N/2);
-//         fft(buf_odd,odd,N/2);
-
-
-//         for (int i = 0; i < N/2; i++) {
-//             cplx t = cexp(-2*I * M_PI * i / N) * odd[i];
-//             out[i] = even[i] + t;
-//             out[i + N/2] = even[i] - t;
-//         }
-//     }
-        
-// }
-
-// // Recursive IFFT function
-// void ifft(cplx *buf, cplx *out, int N) {
-//     if (N <= 1)
-//         for (int i = 0; i < N; i++)
-//         {
-//             out[i] = buf[i];
-//         }
-
-//     else{
-//         cplx buf_even[N/2];
-//         cplx buf_odd[N/2];
-//         cplx even[N/2];
-//         cplx odd[N/2];
-
-//         for (int i = 0; i < N/2; i++)
-//         {
-//             buf_even[i] = buf[2*i];
-//             buf_odd[i] = buf[2*i + 1];
-//         }
-//         ifft(buf_even,even,N/2);
-//         ifft(buf_odd,odd,N/2);
-
-
-//         for (int i = 0; i < N/2; i++) {
-//             cplx t = cexp(2*I * M_PI * i / N) * odd[i];
-//             out[i] = (even[i] + t)/2;
-//             out[i + N/2] = (even[i] - t)/2;
-//         }
-//     }
-// }
-
-
-
-// // Hilbert transform
-// void hilbert_transform(cplx *signal, cplx *result, int N) {
-//     cplx *X = malloc(N * sizeof(cplx));
-//     cplx *H = malloc(N * sizeof(cplx));
-//     cplx *X_filtered = malloc(N * sizeof(cplx));
-//     cplx *analytic_signal = malloc(N * sizeof(cplx));
-
-//     for (int i = 0; i < N; i++) {
-//         X[i] = signal[i];
-//     }
-
-//     // fft(X, result, N, 1);
-//     fft(X, result, N);
-
-//     for (int i = 0; i < N; i++) {
-//         if (i == 0 || i == N / 2) {
-//             H[i] = 1;
-//         } else if (i < N / 2) {
-//             H[i] = 2;
-//         } else {
-//             H[i] = 0;
-//         }
-//     }
-
-//     for (int i = 0; i < N; i++) {
-//         X_filtered[i] = result[i] * H[i];
-//     }
-
-//     // ifft(X_filtered, analytic_signal, N, 1);
-//     ifft(X_filtered, analytic_signal, N);
-
-//     for (int i = 0; i < N; i++) {
-//         result[i] = analytic_signal[i];
-//     }
-
-//     free(X);
-//     free(H);
-//     free(X_filtered);
-//     free(analytic_signal);
-// }
-
-// // Phase unwrapping
-// void unwrap_phase(double *phase,double *unwrapped_phase, int N) {
-//     for (int i = 0; i < N; i++) {
-//         unwrapped_phase[i] = phase[i];
-//     }
-
-//     for (int i = 1; i < N; i++) {
-//         double delta = phase[i] - phase[i - 1];
-//         if (delta > M_PI) {
-//             for (int j = i; j < N; j++) {
-//                 unwrapped_phase[j] -= 2 * M_PI;
-//             }
-//         } else if (delta < -M_PI) {
-//             for (int j = i; j < N; j++) {
-//                 unwrapped_phase[j] += 2 * M_PI;
-//             }
-//         }
-//     }
+//     // Destroy the FFT plan
+//     fftw_destroy_plan(plan);
 // }
     cplx *H;
     
@@ -299,30 +126,40 @@ void hilbert_transform(double *signal,double *unwrapped_phase, int N) {
         X[i] = signal[i];
     }
 
-    // fft(X, result, N, 1);
-    // fft(X, transformed, N);
-    compute_fft(X, transformed, N);
+
+    fftw_plan plan;
+    // Create a plan for the FFT
+    plan = fftw_plan_dft_1d(N, X, transformed, FFTW_FORWARD, FFTW_ESTIMATE);
+    // Execute the FFT
+    fftw_execute(plan);
+    // Destroy the FFT plan
+    fftw_destroy_plan(plan);
 
 
 
-
+    // compute_fft(X, transformed, N);
 
     for (int i = 0; i < N; i++) {
         X_filtered[i] = transformed[i] * H[i];
     }
 
-    // ifft(X_filtered, analytic_signal, N, 1);
-    // ifft(X_filtered, analytic_signal, N);
-    compute_ifft(X_filtered, analytic_signal, N);
+    plan = fftw_plan_dft_1d(N, X_filtered, analytic_signal, FFTW_BACKWARD, FFTW_ESTIMATE);
+    // Execute the IFFT
+    fftw_execute(plan);
 
-    // for (int i = 0; i < N; i++) {
-    //     transformed[i] = analytic_signal[i];
-    // }
+    // Normalize the result
+    for (int i = 0; i < N; ++i) {
+        analytic_signal[i] /= N; // Normalize the result
+    }
+    // Destroy the FFT plan
+    fftw_destroy_plan(plan);
+
+
+
+    // compute_ifft(X_filtered, analytic_signal, N);
 
     free(X);
-    // free(H);
     free(X_filtered);
-    // free(analytic_signal);
 
     double phase[N];
     
@@ -351,25 +188,6 @@ void *receive_data(void *arg) {
     close(conn_info->socket);
     return NULL;
 }
-
-// void *process_signal(void *arg) {
-//     connection_info *conn_info = (connection_info *)arg;
-//     double complex transformed[BUFFER_SIZE];
-//     double phase[BUFFER_SIZE];
-//     double sampling_rate = 1000000.0;  // Adjust according to actual sampling rate
-
-//     while (1) {
-//         pthread_mutex_lock(&conn_info->buffer_mutex);
-//         for (int i = 0; i < BUFFER_SIZE; i++) {
-//             transformed[i] = hilbert_transform(conn_info->buffer, BUFFER_SIZE)[i];
-//             phase[i] = carg(transformed[i]);  // Get phase
-//         }
-//         pthread_mutex_unlock(&conn_info->buffer_mutex);
-//         usleep(1000000 / sampling_rate);
-//     }
-
-//     return NULL;
-// }
 
 void *calculate_phase_difference(void *arg) {
     connection_info *conn_info1 = ((connection_info **)arg)[0];
@@ -401,28 +219,9 @@ void *calculate_phase_difference(void *arg) {
         {
             diff[i] = unwrapped_phase2[i] - unwrapped_phase1[i];
         }
-
-
-        
-        // for (int i = 0; i < BUFFER_SIZE; i++) {
-        //     phase_diff = mean(diff,BUFFER_SIZE);
-        //     fprintf(file, "%lf\n", phase_diff);
-        // }
-
            
         phase_diff = mean_avx(diff,BUFFER_SIZE);
         
-
-
-
-
-
-
-
-
-
-
-
         fprintf(file, "%lf\n", phase_diff);
         
 
