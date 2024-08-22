@@ -30,7 +30,7 @@ void *send_data(void *arg) {
             perror("Send failed");
             break;
         }
-        usleep(1000000 / sampling_rate * BUFFER_SIZE); // Sleep to control the data sending rate
+        usleep(10000 / sampling_rate * BUFFER_SIZE); // Sleep to control the data sending rate
     }
 
     close(client_fd);

@@ -27,6 +27,123 @@ typedef struct {
 #define VECTOR_SIZE 4 // AVX2 processes 4 doubles at a time
 
     cplx *H;
+
+
+
+#include <immintrin.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+
+double avx_dot_product(double *a, double *b, int n) {
+    __m256d sum_vec = _mm256_setzero_pd();  // Initialize the sum vector to zero
+
+    int i;
+    for (i = 0; i <= n - 4; i += 4) {
+        __m256d vec_a = _mm256_loadu_pd(&a[i]);  // Load 4 elements from array a
+        __m256d vec_b = _mm256_loadu_pd(&b[i]);  // Load 4 elements from array b
+        __m256d vec_mul = _mm256_mul_pd(vec_a, vec_b);  // Perform element-wise multiplication
+        sum_vec = _mm256_add_pd(sum_vec, vec_mul);  // Accumulate the results
+    }
+
+    // Horizontal addition to sum all elements in sum_vec
+    double sum_array[4];
+    _mm256_storeu_pd(sum_array, sum_vec);
+    double sum = sum_array[0] + sum_array[1] + sum_array[2] + sum_array[3];
+
+    // Handle the remaining elements if n is not a multiple of 4
+    for (; i < n; i++) {
+        sum += a[i] * b[i];
+    }
+
+    return sum;
+}
+
+// Function to roll the array using AVX
+void avx_roll(double *arr, int n, int shift) {
+    // Normalize shift to be within the array bounds
+    shift = shift % n;
+    if (shift < 0) {
+        shift += n;
+    }
+
+    double *temp = (double*)aligned_alloc(32, sizeof(double) * n);
+
+    // Handle the portion of the array that wraps around
+    int wrap_start = n - shift;
+
+    // Use AVX to copy the wrapped around part
+    for (int i = 0; i < shift; i += 4) {
+        __m256d v = _mm256_loadu_pd(&arr[wrap_start + i]);
+        _mm256_storeu_pd(&temp[i], v);
+    }
+
+    // Use AVX to copy the remaining part
+    for (int i = 0; i < wrap_start; i += 4) {
+        __m256d v = _mm256_loadu_pd(&arr[i]);
+        _mm256_storeu_pd(&temp[shift + i], v);
+    }
+
+    // Copy the result back to the original array
+    for (int i = 0; i < n; i += 4) {
+        __m256d v = _mm256_loadu_pd(&temp[i]);
+        _mm256_storeu_pd(&arr[i], v);
+    }
+
+    free(temp);
+}
+
+// // Function to print the array
+// void print_array(double *arr, int n) {
+//     for (int i = 0; i < n; i++) {
+//         printf("%f ", arr[i]);
+//     }
+//     printf("\n");
+// }
+
+// int main() {
+//     int n = 12;
+//     double arr[12] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0};
+
+//     printf("Original array:\n");
+//     print_array(arr, n);
+
+//     int shift = 3; // Shift the array by 3 positions
+//     avx_roll(arr, n, shift);
+
+//     printf("Rolled array:\n");
+//     print_array(arr, n);
+
+//     return 0;
+// }
+void avx_abs(double *arr, double *result, int n) {
+    __m256d sign_mask = _mm256_set1_pd(-0.0); // Sign mask to clear the sign bit
+
+    int i;
+    for (i = 0; i <= n - 4; i += 4) {
+        __m256d vec = _mm256_loadu_pd(&arr[i]);  // Load 4 elements from array
+        __m256d abs_vec = _mm256_andnot_pd(sign_mask, vec); // Clear the sign bit
+        _mm256_storeu_pd(&result[i], abs_vec);   // Store the result
+    }
+
+    // Handle the remaining elements if n is not a multiple of 4
+    for (; i < n; i++) {
+        result[i] = fabs(arr[i]);
+    }
+}
+int argmax(double *arr, int n) {
+    int max_index = 0;
+    double max_value = arr[0];
+
+    for (int i = 1; i < n; i++) {
+        if (arr[i] > max_value) {
+            max_value = arr[i];
+            max_index = i;
+        }
+    }
+
+    return max_index;
+}
     
 void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, int N) {
 
@@ -101,7 +218,7 @@ void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, 
     double unwrapped_phase2[N];
 
 
-    // unwrap 
+    // unwrap and diff and  mean 
     __m256d pi = _mm256_set1_pd(M_PI);
     __m256d neg_pi = _mm256_set1_pd(-M_PI);
 
@@ -150,42 +267,11 @@ void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, 
         __m256d unwrapped_vec1 = _mm256_add_pd(prev_unwrapped_vec1, delta1);
         __m256d unwrapped_vec2 = _mm256_add_pd(prev_unwrapped_vec2, delta2);
 
-
-        // Store the result
-        // _mm256_storeu_pd(&unwrapped_phase1[i], unwrapped_vec1);
-        // _mm256_storeu_pd(&unwrapped_phase2[i], unwrapped_vec2);
-
-
-        // __m256d data_vec1 = _mm256_loadu_pd(&unwrapped_phase1[i]);
-        // __m256d data_vec2 = _mm256_loadu_pd(&unwrapped_phase2[i]);
-
         __m256d diff_avx = _mm256_sub_pd(unwrapped_vec1,unwrapped_vec2);
 
         sum_vec = _mm256_add_pd(sum_vec, diff_avx);
 
     }
-
-
-
-
-    // unwrap_phases_avx(phase1,unwrapped_phase1,N);
-    // unwrap_phases_avx(phase2,unwrapped_phase2,N);
-
-
-    // diff and mean 
-
-  
-
-
-    // // Process elements in chunks of VECTOR_SIZE
-    // for (i = 1; i < N ; i += VECTOR_SIZE) {    // i=0 ; i<= N - VECTOR_SIZE
-    //     __m256d data_vec1 = _mm256_loadu_pd(&unwrapped_phase1[i]);
-    //     __m256d data_vec2 = _mm256_loadu_pd(&unwrapped_phase2[i]);
-
-    //     __m256d diff_avx = _mm256_sub_pd(data_vec1,data_vec2);
-
-    //     sum_vec = _mm256_add_pd(sum_vec, diff_avx);
-    // }  
 
     // Horizontal sum to get the total sum
     double sum[4];
@@ -195,7 +281,30 @@ void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, 
 
     means_phase_diff =  total_sum / N;
 
+
+    int shift = 2;
+    double dot;
+
+    avx_roll(signal1,N,shift);
+
+    dot = avx_dot_product(signal1,signal2,N);
+
+    double fft_abs1[N];
+    double fft_real1[N];
+
+    for (int i = 0; i < N; i++)
+    {
+        fft_real1[i] = creal(*transformed1);
+    }
+    
+
+    avx_abs(fft_real1,fft_abs1,N);
+    means_phase_diff = 0; // (double)argmax(fft_abs1,N);
+
+    // round();
+
 }
+
 
 
 
@@ -209,7 +318,7 @@ void *calculate_phase_difference(void *arg) {
     }
 
     double phase_diff;
-    double sampling_rate = 1000.0;  // Adjust according to actual sampling rate
+    double sampling_rate = 1024.0;  // Adjust according to actual sampling rate
 
     while (1) {
         pthread_mutex_lock(&conn_info1->buffer_mutex);

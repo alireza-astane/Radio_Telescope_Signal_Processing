@@ -17,7 +17,7 @@ double sampling_rate = 1.0; // Sampling rate in Hz (adjust as needed)
 
 void generate_sine_wave(double *buffer, int length, double frequency, double amplitude, double sampling_rate) {
     for (int i = 0; i < length; i++) {
-        buffer[i] = amplitude * sin((frequency * i / sampling_rate) + 0.01);
+        buffer[i] = amplitude * sin((frequency * i / sampling_rate) + 1);
     }
 }
 
@@ -30,7 +30,7 @@ void *send_data(void *arg) {
             perror("Send failed");
             break;
         }
-        usleep(1000000 / sampling_rate * BUFFER_SIZE); // Sleep to control the data sending rate
+        usleep(10000 / sampling_rate * BUFFER_SIZE); // Sleep to control the data sending rate
     }
 
     close(client_fd);
