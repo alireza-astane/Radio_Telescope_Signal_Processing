@@ -26,66 +26,6 @@ typedef struct {
 
 #define VECTOR_SIZE 4 // AVX2 processes 4 doubles at a time
 
-
-
-// Function to unwrap phase angles using AVX
-void unwrap_phases_avx(double* phases, double* unwrapped, int n) {
-    __m256d pi = _mm256_set1_pd(M_PI);
-    __m256d neg_pi = _mm256_set1_pd(-M_PI);
-
-    // Initialize the first value
-    unwrapped[0] = phases[0];
-
-    // Process in chunks of VECTOR_SIZE
-    for (int i = 1; i < n; i += VECTOR_SIZE) {
-        __m256d phase_vec = _mm256_loadu_pd(&phases[i]);
-        __m256d prev_unwrapped_vec = _mm256_set1_pd(unwrapped[i - 1]);
-
-        // Compute phase differences
-        __m256d delta = _mm256_sub_pd(phase_vec, prev_unwrapped_vec);
-
-        // Unwrap phases: ensure delta is within [-π, π]
-        __m256d mask = _mm256_cmp_pd(delta, pi, _CMP_GT_OS);
-        __m256d adjustment = _mm256_blendv_pd(neg_pi, pi, mask);
-        delta = _mm256_sub_pd(delta, adjustment);
-
-        mask = _mm256_cmp_pd(delta, neg_pi, _CMP_LT_OS);
-        adjustment = _mm256_blendv_pd(pi, neg_pi, mask);
-        delta = _mm256_add_pd(delta, adjustment);
-
-        // Compute the unwrapped values
-        __m256d unwrapped_vec = _mm256_add_pd(prev_unwrapped_vec, delta);
-
-        // Store the result
-        _mm256_storeu_pd(&unwrapped[i], unwrapped_vec);
-    }
-}
-
-// // Function to compute the mean of an array using AVX
-// double mean_avx(double* array, int n) {
-//     __m256d sum_vec = _mm256_setzero_pd();
-//     int i;
-
-//     // Process elements in chunks of VECTOR_SIZE
-//     for (i = 0; i <= n - VECTOR_SIZE; i += VECTOR_SIZE) {
-//         __m256d data_vec = _mm256_loadu_pd(&array[i]);
-//         sum_vec = _mm256_add_pd(sum_vec, data_vec);
-//     }
-
-//     // Horizontal sum to get the total sum
-//     double sum[4];
-//     _mm256_storeu_pd(sum, sum_vec);
-
-//     double total_sum = sum[0] + sum[1] + sum[2] + sum[3];
-
-//     // Handle any remaining elements
-//     for (; i < n; ++i) {
-//         total_sum += array[i];
-//     }
-
-//     return total_sum / n;
-// }
-
     cplx *H;
     
 void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, int N) {
@@ -95,10 +35,6 @@ void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, 
 
     cplx *X1 = malloc(N * sizeof(cplx));
     cplx *X2 = malloc(N * sizeof(cplx));
-
-
-    cplx *X_filtered1 = malloc(N * sizeof(cplx));
-    cplx *X_filtered2 = malloc(N * sizeof(cplx));
 
     cplx *analytic_signal1 = malloc(N * sizeof(cplx));
     cplx *analytic_signal2 = malloc(N * sizeof(cplx));
@@ -125,13 +61,13 @@ void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, 
 
 
     for (int i = 0; i < N; i++) {
-        X_filtered1[i] = transformed1[i] * H[i];   // ??? replace with x 
-        X_filtered2[i] = transformed2[i] * H[i];
+        X1[i] = transformed1[i] * H[i];   // ??? replace with x 
+        X2[i] = transformed2[i] * H[i];
     }
 
 
-    plan1 = fftw_plan_dft_1d(N, X_filtered1, analytic_signal1, FFTW_BACKWARD, FFTW_ESTIMATE);
-    plan2 = fftw_plan_dft_1d(N, X_filtered2, analytic_signal2, FFTW_BACKWARD, FFTW_ESTIMATE);
+    plan1 = fftw_plan_dft_1d(N, X1, analytic_signal1, FFTW_BACKWARD, FFTW_ESTIMATE);
+    plan2 = fftw_plan_dft_1d(N, X2, analytic_signal2, FFTW_BACKWARD, FFTW_ESTIMATE);
 
     // Execute the IFFT
     fftw_execute(plan1);
@@ -151,9 +87,6 @@ void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, 
 
     free(X1);
     free(X2);
-    free(X_filtered1);
-    free(X_filtered2);
-
 
     double phase1[N];
     double phase2[N];
@@ -235,7 +168,7 @@ void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, 
 
 
     // Process elements in chunks of VECTOR_SIZE
-    for (i = 0; i <= N - VECTOR_SIZE; i += VECTOR_SIZE) {
+    for (i = 1; i < N ; i += VECTOR_SIZE) {
         __m256d data_vec1 = _mm256_loadu_pd(&unwrapped_phase1[i]);
         __m256d data_vec2 = _mm256_loadu_pd(&unwrapped_phase2[i]);
 
