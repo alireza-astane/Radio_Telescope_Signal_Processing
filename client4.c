@@ -86,108 +86,103 @@ double mean_avx(double* array, int n) {
     return total_sum / n;
 }
 
-// // Function to perform FFT using FFTW3 with double complex arrays  commented !!!!!
-// void compute_fft(double complex* input, double complex* output, int n) {
-//     fftw_plan plan;
-//     // Create a plan for the FFT
-//     plan = fftw_plan_dft_1d(n, input, output, FFTW_FORWARD, FFTW_ESTIMATE);
-//     // Execute the FFT
-//     fftw_execute(plan);
-//     // Destroy the FFT plan
-//     fftw_destroy_plan(plan);
-// }
-
-// // Function to perform IFFT using FFTW3 with double complex arrays
-// void compute_ifft(double complex* input, double complex* output, int n) {
-//     fftw_plan plan;
-//     plan = fftw_plan_dft_1d(n, input, output, FFTW_BACKWARD, FFTW_ESTIMATE);
-//     // Execute the IFFT
-//     fftw_execute(plan);
-
-//     // Convert fftw_complex to double complex and normalize the result
-//     for (int i = 0; i < n; ++i) {
-//         // output[i] = creal(fftw_output[i])+ I * cimag(fftw_output[i]); commented!!!
-//         output[i] /= n; // Normalize the result
-//     }
-//     // Destroy the FFT plan
-//     fftw_destroy_plan(plan);
-// }
     cplx *H;
     
-void hilbert_transform(double *signal,double *unwrapped_phase, int N) {
+void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, int N) {
 
-    double complex transformed[N];
-    cplx *X = malloc(N * sizeof(cplx));
+    cplx transformed1[N];
+    cplx transformed2[N];
 
-    cplx *X_filtered = malloc(N * sizeof(cplx));
-    cplx *analytic_signal = malloc(N * sizeof(cplx));
+    cplx *X1 = malloc(N * sizeof(cplx));
+    cplx *X2 = malloc(N * sizeof(cplx));
+
+
+    cplx *X_filtered1 = malloc(N * sizeof(cplx));
+    cplx *X_filtered2 = malloc(N * sizeof(cplx));
+
+    cplx *analytic_signal1 = malloc(N * sizeof(cplx));
+    cplx *analytic_signal2 = malloc(N * sizeof(cplx));
+
 
     for (int i = 0; i < N; i++) {
-        X[i] = signal[i];
+        X1[i] = signal1[i];
+        X2[i] = signal2[i];
     }
 
+    fftw_plan plan1;
+    fftw_plan plan2;
 
-    fftw_plan plan;
     // Create a plan for the FFT
-    plan = fftw_plan_dft_1d(N, X, transformed, FFTW_FORWARD, FFTW_ESTIMATE);
+    plan1 = fftw_plan_dft_1d(N, X1, transformed1, FFTW_FORWARD, FFTW_ESTIMATE);
+    plan2 = fftw_plan_dft_1d(N, X2, transformed2, FFTW_FORWARD, FFTW_ESTIMATE);
+
     // Execute the FFT
-    fftw_execute(plan);
-    // Destroy the FFT plan
-    fftw_destroy_plan(plan);
+    fftw_execute(plan1);
+    fftw_execute(plan2);
 
+    // // Destroy the FFT plan
+    // fftw_destroy_plan(plan);   ????
 
-
-    // compute_fft(X, transformed, N);
 
     for (int i = 0; i < N; i++) {
-        X_filtered[i] = transformed[i] * H[i];
+        X_filtered1[i] = transformed1[i] * H[i];   // ??? replace with x 
+        X_filtered2[i] = transformed2[i] * H[i];
     }
 
-    plan = fftw_plan_dft_1d(N, X_filtered, analytic_signal, FFTW_BACKWARD, FFTW_ESTIMATE);
+
+    plan1 = fftw_plan_dft_1d(N, X_filtered1, analytic_signal1, FFTW_BACKWARD, FFTW_ESTIMATE);
+    plan2 = fftw_plan_dft_1d(N, X_filtered2, analytic_signal2, FFTW_BACKWARD, FFTW_ESTIMATE);
+
     // Execute the IFFT
-    fftw_execute(plan);
+    fftw_execute(plan1);
+    fftw_execute(plan2);
+
 
     // Normalize the result
     for (int i = 0; i < N; ++i) {
-        analytic_signal[i] /= N; // Normalize the result
+        analytic_signal1[i] /= N; // Normalize the result
+        analytic_signal2[i] /= N; // Normalize the result
     }
     // Destroy the FFT plan
-    fftw_destroy_plan(plan);
-
-
+    fftw_destroy_plan(plan1);
+    fftw_destroy_plan(plan2);
 
     // compute_ifft(X_filtered, analytic_signal, N);
 
-    free(X);
-    free(X_filtered);
+    free(X1);
+    free(X2);
+    free(X_filtered1);
+    free(X_filtered2);
 
-    double phase[N];
+
+    double phase1[N];
+    double phase2[N];
+
     
     for (int i = 0; i < N; ++i) {
-        phase[i] = carg(analytic_signal[i]);
-    }
+        phase1[i] = carg(analytic_signal1[i]);
+        phase1[i] = carg(analytic_signal2[i]);
 
-    unwrap_phases_avx(phase,unwrapped_phase,N);
-    
+    }
+    double unwrapped_phase1[N];
+    double unwrapped_phase2[N];
+
+
+    unwrap_phases_avx(phase1,unwrapped_phase1,N);
+    unwrap_phases_avx(phase1,unwrapped_phase2,N);
+
+    double diff[N];
+
+    for (size_t i = 0; i < N; i++)
+    {
+        diff[i] = unwrapped_phase2[i] - unwrapped_phase1[i];
+    }
+        
+    means_phase_diff = mean_avx(diff,N);
+
 }
 
-void *receive_data(void *arg) {
-    connection_info *conn_info = (connection_info *)arg;
-    int bytes_received;
 
-    while ((bytes_received = recv(conn_info->socket, conn_info->buffer, sizeof(conn_info->buffer), 0)) > 0) {
-        pthread_mutex_lock(&conn_info->buffer_mutex);
-        // Process the received data
-        pthread_mutex_unlock(&conn_info->buffer_mutex);
-    }
-
-    if (bytes_received < 0) {
-        perror("Receive failed");
-    }
-
-    close(conn_info->socket);
-    return NULL;
-}
 
 void *calculate_phase_difference(void *arg) {
     connection_info *conn_info1 = ((connection_info **)arg)[0];
@@ -210,17 +205,7 @@ void *calculate_phase_difference(void *arg) {
 
         double diff[BUFFER_SIZE];
 
-
-        
-        hilbert_transform(conn_info1->buffer,unwrapped_phase1, BUFFER_SIZE);
-        hilbert_transform(conn_info2->buffer,unwrapped_phase2, BUFFER_SIZE);
-
-        for (size_t i = 0; i < BUFFER_SIZE; i++)
-        {
-            diff[i] = unwrapped_phase2[i] - unwrapped_phase1[i];
-        }
-           
-        phase_diff = mean_avx(diff,BUFFER_SIZE);
+        hilbert_transform(conn_info1->buffer,conn_info2->buffer,phase_diff,BUFFER_SIZE);
         
         fprintf(file, "%lf\n", phase_diff);
         
@@ -231,6 +216,25 @@ void *calculate_phase_difference(void *arg) {
     }
 
     fclose(file);
+    return NULL;
+}
+
+
+void *receive_data(void *arg) {
+    connection_info *conn_info = (connection_info *)arg;
+    int bytes_received;
+
+    while ((bytes_received = recv(conn_info->socket, conn_info->buffer, sizeof(conn_info->buffer), 0)) > 0) {
+        pthread_mutex_lock(&conn_info->buffer_mutex);
+        // Process the received data
+        pthread_mutex_unlock(&conn_info->buffer_mutex);
+    }
+
+    if (bytes_received < 0) {
+        perror("Receive failed");
+    }
+
+    close(conn_info->socket);
     return NULL;
 }
 
