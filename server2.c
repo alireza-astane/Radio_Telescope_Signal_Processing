@@ -11,9 +11,9 @@
 #define PI 3.14159265358979323846
 
 double sine_wave[BUFFER_SIZE];
-double frequency = 2.0; // 1 Hz
+double frequency = 10.0; // 1 Hz
 double amplitude = 1.0; // Amplitude of the sine wave
-double sampling_rate = 1.0; // Sampling rate in Hz (adjust as needed)
+double sampling_rate = 20; // Sampling rate in Hz (adjust as needed)
 
 void generate_sine_wave(double *buffer, int length, double frequency, double amplitude, double sampling_rate) {
     for (int i = 0; i < length; i++) {
@@ -21,16 +21,30 @@ void generate_sine_wave(double *buffer, int length, double frequency, double amp
     }
 }
 
+
+
+
+// Function to print an array
+void print_array(double* array, int size) {
+    printf("array ([");
+    for (int i = 0; i < size-1; i++) {
+        printf("%f ,", array[i]);
+    }
+    printf("%f ])",array[size-1]);
+    printf("\n");
+}
+
 void *send_data(void *arg) {
     int client_fd = *(int *)arg;
 
     while (1) {
         generate_sine_wave(sine_wave, BUFFER_SIZE, frequency, amplitude, sampling_rate);
+        // print_array(sine_wave,BUFFER_SIZE);
         if (send(client_fd, sine_wave, sizeof(sine_wave), 0) < 0) {
             perror("Send failed");
             break;
         }
-        usleep(10000 / sampling_rate * BUFFER_SIZE); // Sleep to control the data sending rate
+        usleep(100000 / sampling_rate * BUFFER_SIZE); // Sleep to control the data sending rate
     }
 
     close(client_fd);

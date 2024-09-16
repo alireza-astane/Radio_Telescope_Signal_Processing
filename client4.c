@@ -35,6 +35,212 @@ typedef struct {
 #include <stdlib.h>
 
 
+
+#include <immintrin.h>
+#include <math.h>
+
+#define VECTOR_SIZE 4 // AVX2 processes 4 doubles at a time
+
+typedef __m128i v4i;
+
+v4i prefix(v4i x) {
+    // x = 1, 2, 3, 4
+    x = _mm_add_epi32(x, _mm_slli_si128(x, 4));
+    // x = 1, 2, 3, 4
+    //   + 0, 1, 2, 3
+    //   = 1, 3, 5, 7
+    x = _mm_add_epi32(x, _mm_slli_si128(x, 8));
+    // x = 1, 3, 5, 7
+    //   + 0, 0, 1, 3
+    //   = 1, 3, 6, 10
+    return x;
+}
+
+// __m256d cumsum(__m256d x) {
+//     x = _mm256_add_pd(x, _mm256_slli_pd(x, 4));
+//     x = _mm256_add_pd(x, _mm256_slli_si256(x, 8));
+//     return x;
+// }
+
+
+void roll(double *arr, int n, int shift) {
+    if (n == 0) return;
+    
+    // Normalize the shift value to ensure it's within the bounds of the array
+    shift = shift % n;
+    if (shift < 0) {
+        shift += n;
+    }
+    
+    // Allocate a temporary array to hold the result
+    double *temp = (double *)malloc(n * sizeof(double));
+
+    // Copy the shifted elements into the temporary array
+    memcpy(temp, &arr[n - shift], shift * sizeof(double));  // Copy the last 'shift' elements to the beginning
+    memcpy(&temp[shift], arr, (n - shift) * sizeof(double));  // Copy the first 'n-shift' elements to the end
+
+    // Copy the result back to the original array
+    memcpy(arr, temp, n * sizeof(double));
+
+    // Free the temporary array
+    free(temp);
+}
+
+
+// Phase unwrapping
+void unwrap_phase3(double *phase,double *unwrapped_phase, int N) {
+    __m256d pi = _mm256_set1_pd(M_PI);
+    __m256d neg_pi = _mm256_set1_pd(-M_PI);
+    __m256d two_pi = _mm256_set1_pd(2*M_PI);
+    __m256d one = _mm256_set1_pd(1);
+    __m256d zero = _mm256_set1_pd(0);
+    __m256d minus_one = _mm256_set1_pd(-1);
+
+    // Initialize the first value
+    unwrapped_phase[0] = phase[0];
+    __m256d sum =  _mm256_set1_pd(0);
+
+    // Process in chunks of VECTOR_SIZE
+    for (int i = 1; i < N; i += VECTOR_SIZE) {
+        __m256d d = _mm256_set1_pd(0);
+
+        __m256d phase_vec = _mm256_loadu_pd(&phase[i]);
+        __m256d prev_unwrapped_vec = _mm256_loadu_pd(&phase[i-1]);
+
+        // Compute phase differences
+        __m256d delta = _mm256_sub_pd(phase_vec, prev_unwrapped_vec);
+        __m256d mask1 = _mm256_cmp_pd(delta, pi, _CMP_GT_OS);
+        __m256d mask2 = _mm256_cmp_pd(delta, neg_pi, _CMP_LT_OS);
+
+
+        __m256d adjustment = _mm256_blendv_pd(_mm256_blendv_pd(zero,one,mask2),minus_one, mask1);
+        adjustment = _mm256_add_pd(  _mm256_castsi256_pd(_mm256_castsi128_si256(prefix(_mm256_castsi256_si128(_mm256_castpd_si256(adjustment))))) ,sum);
+        sum  =  _mm256_set1_pd(adjustment[3]);
+
+        adjustment = _mm256_mul_pd(adjustment,two_pi);
+
+        // Compute the unwrapped values
+        __m256d unwrapped_vec = _mm256_add_pd(phase_vec, adjustment);
+
+        // Store the result
+        _mm256_storeu_pd(&unwrapped_phase[i], unwrapped_vec);
+
+
+    
+        
+
+        
+        
+    }
+
+
+
+
+
+    for (int i = 0; i < N; i++) {
+        unwrapped_phase[i] = phase[i];
+    }
+    int ks[N];
+    int k = 0;
+    ks[0] = 0;
+
+    for (int i = 1; i < N; i++)
+    {
+        double delta = phase[i] - phase[i - 1];
+        int d = (delta >= M_PI) ? -1 : (delta <= -M_PI ? 1 : 0 ) ;
+        k = k + d ;
+        ks[i] = k;
+    }
+    
+    for (int i = 0; i < N; i++)
+    {
+        unwrapped_phase[i] += ks[i] * 2* M_PI;
+    }
+}
+
+
+
+// Phase unwrapping
+void unwrap_phase2(double *phase,double *unwrapped_phase, int N) {
+    for (int i = 0; i < N; i++) {
+        unwrapped_phase[i] = phase[i];
+    }
+    int ks[N];
+    int k = 0;
+    ks[0] = 0;
+
+    for (int i = 1; i < N; i++)
+    {
+        double delta = phase[i] - phase[i - 1];
+        int d = (delta > M_PI) ? -1 : (delta < -M_PI ? 1 : 0 ) ;
+        k = k + d ;
+        ks[i] = k;
+    }
+    
+    for (int i = 0; i < N; i++)
+    {
+        unwrapped_phase[i] += ks[i] * 2* M_PI;
+    }
+}
+
+
+// Phase unwrapping
+void unwrap_phase(double *phase,double *unwrapped_phase, int N) {
+    for (int i = 0; i < N; i++) {
+        unwrapped_phase[i] = phase[i];
+    }
+
+    for (int i = 1; i < N; i++) {
+        double delta = phase[i] - phase[i - 1];
+        if (delta > M_PI) {
+            for (int j = i; j < N; j++) {
+                unwrapped_phase[j] -= 2 * M_PI;
+            }
+        } else if (delta < -M_PI) {
+            for (int j = i; j < N; j++) {
+                unwrapped_phase[j] += 2 * M_PI;
+            }
+        }
+    }
+}
+
+
+
+// Function to unwrap phase angles using AVX
+void unwrap_phases_avx(double* phases, double* unwrapped, int n) {
+    __m256d pi = _mm256_set1_pd(M_PI);
+    __m256d neg_pi = _mm256_set1_pd(-M_PI);
+
+    // Initialize the first value
+    unwrapped[0] = phases[0];
+
+    // Process in chunks of VECTOR_SIZE
+    for (int i = 1; i < n; i += VECTOR_SIZE) {
+        __m256d phase_vec = _mm256_loadu_pd(&phases[i]);
+        __m256d prev_unwrapped_vec = _mm256_loadu_pd(&phases[i-1]);
+
+        // Compute phase differences
+        __m256d delta = _mm256_sub_pd(phase_vec, prev_unwrapped_vec);
+
+        // Unwrap phases: ensure delta is within [-π, π]
+        __m256d mask = _mm256_cmp_pd(delta, pi, _CMP_GT_OS);
+        __m256d adjustment = _mm256_blendv_pd(neg_pi, pi, mask);
+        delta = _mm256_sub_pd(delta, adjustment);
+
+        mask = _mm256_cmp_pd(delta, neg_pi, _CMP_LT_OS);
+        adjustment = _mm256_blendv_pd(pi, neg_pi, mask);
+        delta = _mm256_add_pd(delta, adjustment);
+
+        // Compute the unwrapped values
+        __m256d unwrapped_vec = _mm256_add_pd(prev_unwrapped_vec, delta);
+
+        // Store the result
+        _mm256_storeu_pd(&unwrapped[i], unwrapped_vec);
+    }
+}
+
+
+
 double avx_dot_product(double *a, double *b, int n) {
     __m256d sum_vec = _mm256_setzero_pd();  // Initialize the sum vector to zero
 
@@ -95,10 +301,11 @@ void avx_roll(double *arr, int n, int shift) {
 
 // // Function to print the array
 // void print_array(double *arr, int n) {
-//     for (int i = 0; i < n; i++) {
-//         printf("%f ", arr[i]);
+//     printf("array([%f",arr[0]);
+//     for (int i = 1; i < n; i++) {
+//         printf(",%f ", arr[i]);
 //     }
-//     printf("\n");
+//     printf("])\n");
 // }
 
 // int main() {
@@ -145,7 +352,51 @@ int argmax(double *arr, int n) {
     return max_index;
 }
     
-void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, int N) {
+
+// Function to print an array
+void print_array(double* array, int size) {
+    printf("array ([");
+    for (int i = 0; i < size-1; i++) {
+        printf("%f ,", array[i]);
+    }
+    printf("%f ])",array[size-1]);
+    printf("\n");
+}
+
+
+// Function to calculate the mean of differences between two arrays using AVX
+double avx_mean_difference(double *arr1, double *arr2, int n) {
+    __m256d sum_diff_vec = _mm256_setzero_pd();  // Initialize a vector to accumulate the differences
+
+    int i;
+    for (i = 0; i <= n - 4; i += 4) {
+        __m256d vec1 = _mm256_loadu_pd(&arr1[i]); // Load 4 elements from arr1
+        __m256d vec2 = _mm256_loadu_pd(&arr2[i]); // Load 4 elements from arr2
+        __m256d diff_vec = _mm256_sub_pd(vec1, vec2); // Subtract arr2 from arr1
+        sum_diff_vec = _mm256_add_pd(sum_diff_vec, diff_vec); // Accumulate the differences
+    }
+
+    // Sum the elements in the vector sum_diff_vec
+    double sum_diff[4];
+    _mm256_storeu_pd(sum_diff, sum_diff_vec);
+    double total_sum_diff = sum_diff[0] + sum_diff[1] + sum_diff[2] + sum_diff[3];
+
+    // Handle the remaining elements if n is not a multiple of 4
+    for (; i < n; i++) {
+        total_sum_diff += (arr1[i] - arr2[i]);
+    }
+
+    // Calculate and return the mean of the differences
+    return total_sum_diff / n;
+}
+
+
+void hilbert_transform(double *signal1,double *signal2,double *means_phase_diff, int N) {
+
+
+
+    print_array(signal1,N);
+    print_array(signal2,N);
 
     cplx transformed1[N];
     cplx transformed2[N];
@@ -156,6 +407,17 @@ void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, 
     cplx *analytic_signal1 = malloc(N * sizeof(cplx));
     cplx *analytic_signal2 = malloc(N * sizeof(cplx));
 
+
+    cplx *H = malloc(BUFFER_SIZE * sizeof(cplx));
+    for (int i = 0; i < BUFFER_SIZE; i++) {
+        if (i == 0 || i == BUFFER_SIZE / 2) {
+            H[i] = 1;
+        } else if (i < BUFFER_SIZE / 2) {
+            H[i] = 2;
+        } else {
+            H[i] = 0;
+        }
+    }
 
     for (int i = 0; i < N; i++) {
         X1[i] = signal1[i];
@@ -214,94 +476,168 @@ void hilbert_transform(double *signal1,double *signal2,double means_phase_diff, 
         phase2[i] = carg(analytic_signal2[i]);
 
     }
+
+
+    // print_array(phase1,BUFFER_SIZE);
+    
+
     double unwrapped_phase1[N];
     double unwrapped_phase2[N];
 
 
-    // unwrap and diff and  mean 
-    __m256d pi = _mm256_set1_pd(M_PI);
-    __m256d neg_pi = _mm256_set1_pd(-M_PI);
+    unwrap_phase2(phase1,unwrapped_phase1,N);
+    unwrap_phase2(phase2,unwrapped_phase2,N);
 
-    // Initialize the first value
-    unwrapped_phase1[0] = phase1[0];
-    unwrapped_phase2[0] = phase2[0];
+    // print_array(unwrapped_phase1,N);
+    // print_array(unwrapped_phase2,N);
 
 
-    __m256d sum_vec = _mm256_setzero_pd();
-    int i;
+    // *means_phase_diff = 0;
 
-    // Process in chunks of VECTOR_SIZE
-    for (int i = 1; i < N; i += VECTOR_SIZE) {
-        __m256d phase_vec1 = _mm256_loadu_pd(&phase1[i]);
-        __m256d phase_vec2 = _mm256_loadu_pd(&phase2[i]);
-
-        __m256d prev_unwrapped_vec1 = _mm256_set1_pd(unwrapped_phase1[i - 1]);
-        __m256d prev_unwrapped_vec2 = _mm256_set1_pd(unwrapped_phase2[i - 1]);
+    // for (int i = 0; i < N; i++)
+    // {
+    //     *means_phase_diff = *means_phase_diff + ( - unwrapped_phase2[i] + unwrapped_phase1[i] );    
+    // }
+    
 
 
-        // Compute phase differences
-        __m256d delta1 = _mm256_sub_pd(phase_vec1, prev_unwrapped_vec1);
-        __m256d delta2 = _mm256_sub_pd(phase_vec2, prev_unwrapped_vec2);
-
-        // Unwrap phases: ensure delta is within [-π, π]
-        __m256d mask1 = _mm256_cmp_pd(delta1, pi, _CMP_GT_OS);
-        __m256d mask2 = _mm256_cmp_pd(delta2, pi, _CMP_GT_OS);
-
-        __m256d adjustment1 = _mm256_blendv_pd(neg_pi, pi, mask1);
-        __m256d adjustment2 = _mm256_blendv_pd(neg_pi, pi, mask2);
-
-        delta1 = _mm256_sub_pd(delta1, adjustment1);
-        delta2 = _mm256_sub_pd(delta2, adjustment2);
 
 
-        mask1 = _mm256_cmp_pd(delta1, neg_pi, _CMP_LT_OS);
-        mask2 = _mm256_cmp_pd(delta2, neg_pi, _CMP_LT_OS);
-
-        adjustment1 = _mm256_blendv_pd(pi, neg_pi, mask1);
-        adjustment2 = _mm256_blendv_pd(pi, neg_pi, mask2);
-
-        delta1 = _mm256_add_pd(delta1, adjustment1);
-        delta2 = _mm256_add_pd(delta2, adjustment2);
-
-        // Compute the unwrapped values
-        __m256d unwrapped_vec1 = _mm256_add_pd(prev_unwrapped_vec1, delta1);
-        __m256d unwrapped_vec2 = _mm256_add_pd(prev_unwrapped_vec2, delta2);
-
-        __m256d diff_avx = _mm256_sub_pd(unwrapped_vec1,unwrapped_vec2);
-
-        sum_vec = _mm256_add_pd(sum_vec, diff_avx);
-
-    }
-
-    // Horizontal sum to get the total sum
-    double sum[4];
-    _mm256_storeu_pd(sum, sum_vec);
-
-    double total_sum = sum[0] + sum[1] + sum[2] + sum[3];
-
-    means_phase_diff =  total_sum / N;
 
 
-    int shift = 2;
-    double dot;
 
-    avx_roll(signal1,N,shift);
 
-    dot = avx_dot_product(signal1,signal2,N);
+    // *means_phase_diff =  *means_phase_diff / N;
 
-    double fft_abs1[N];
-    double fft_real1[N];
+    *means_phase_diff = avx_mean_difference(unwrapped_phase1,unwrapped_phase2,N);
+
+
+
+
+
+
+
+
+    // // unwrap and diff and  mean 
+    // __m256d pi = _mm256_set1_pd(M_PI);
+    // __m256d neg_pi = _mm256_set1_pd(-M_PI);
+
+    // // Initialize the first value
+    // unwrapped_phase1[0] = phase1[0];
+    // unwrapped_phase2[0] = phase2[0];
+
+
+    // __m256d sum_vec = _mm256_setzero_pd();
+    // int i;
+
+    // // Process in chunks of VECTOR_SIZE
+    // for (int i = 1; i < N; i += VECTOR_SIZE) {
+    //     __m256d phase_vec1 = _mm256_loadu_pd(&phase1[i]);
+    //     __m256d phase_vec2 = _mm256_loadu_pd(&phase2[i]);
+
+    //     __m256d prev_unwrapped_vec1 = _mm256_set1_pd(unwrapped_phase1[i - 1]);
+    //     __m256d prev_unwrapped_vec2 = _mm256_set1_pd(unwrapped_phase2[i - 1]);
+
+
+    //     // Compute phase differences
+    //     __m256d delta1 = _mm256_sub_pd(phase_vec1, prev_unwrapped_vec1);
+    //     __m256d delta2 = _mm256_sub_pd(phase_vec2, prev_unwrapped_vec2);
+
+    //     // Unwrap phases: ensure delta is within [-π, π]
+    //     __m256d mask1 = _mm256_cmp_pd(delta1, pi, _CMP_GT_OS);
+    //     __m256d mask2 = _mm256_cmp_pd(delta2, pi, _CMP_GT_OS);
+
+    //     __m256d adjustment1 = _mm256_blendv_pd(neg_pi, pi, mask1);
+    //     __m256d adjustment2 = _mm256_blendv_pd(neg_pi, pi, mask2);
+
+    //     delta1 = _mm256_sub_pd(delta1, adjustment1);
+    //     delta2 = _mm256_sub_pd(delta2, adjustment2);
+
+
+    //     mask1 = _mm256_cmp_pd(delta1, neg_pi, _CMP_LT_OS);
+    //     mask2 = _mm256_cmp_pd(delta2, neg_pi, _CMP_LT_OS);
+
+    //     adjustment1 = _mm256_blendv_pd(pi, neg_pi, mask1);
+    //     adjustment2 = _mm256_blendv_pd(pi, neg_pi, mask2);
+
+    //     delta1 = _mm256_add_pd(delta1, adjustment1);
+    //     delta2 = _mm256_add_pd(delta2, adjustment2);
+
+    //     // Compute the unwrapped values
+    //     __m256d unwrapped_vec1 = _mm256_add_pd(prev_unwrapped_vec1, delta1);
+    //     __m256d unwrapped_vec2 = _mm256_add_pd(prev_unwrapped_vec2, delta2);
+
+    //     __m256d diff_avx = _mm256_sub_pd(unwrapped_vec1,unwrapped_vec2);
+
+    //     sum_vec = _mm256_add_pd(sum_vec, diff_avx);
+
+    // }
+
+    // // Horizontal sum to get the total sum
+    // double sum[4];
+    // _mm256_storeu_pd(sum, sum_vec);
+
+    // double total_sum = sum[0] + sum[1] + sum[2] + sum[3];
+
+
+    // printf("%f",total_sum);
+
+    // // Function to print an array
+
+
+
+    // *means_phase_diff =  total_sum / N;
+    // printf("%f",*means_phase_diff);
+
+
+  
+
+    int sample_rate = 1;
+    double freq = 10 ; 
+
+    int shift = (int)round(sample_rate/(2*M_PI*freq));
+
+
+    double copy1[N];
 
     for (int i = 0; i < N; i++)
     {
-        fft_real1[i] = creal(*transformed1);
+        copy1[i] = signal1[i];
     }
     
 
-    avx_abs(fft_real1,fft_abs1,N);
-    means_phase_diff = 0; // (double)argmax(fft_abs1,N);
 
-    // round();
+    roll(copy1,N,shift);
+
+    double dot = 0;
+
+    for (int i = 0; i < N; i++)
+    {
+        dot += copy1[i] + signal2[i];
+    }
+
+       printf("%f\n",dot);
+    
+    
+
+
+    // avx_roll(signal1,N,shift);
+
+    // double dot = avx_dot_product(signal1,signal2,N);
+
+    // printf("%f\n",dot);
+    // double fft_abs1[N];
+
+    // for (int i = 0; i < N; i++)
+    // {
+    //     fft_abs1[i] = fabs(creal(transformed1[i]));
+    // }
+    // printf("%d\n",argmax(fft_abs1,N));
+
+    // avx_abs(fft_real1,fft_abs1,N);
+    // means_phase_diff = 0.0 ; // (double)argmax(fft_abs1,N);
+
+    // // round();
 
 }
 
@@ -317,26 +653,30 @@ void *calculate_phase_difference(void *arg) {
         return NULL;
     }
 
-    double phase_diff;
+    double *phase_diff = malloc(sizeof(double));;
     double sampling_rate = 1024.0;  // Adjust according to actual sampling rate
 
-    while (1) {
+    int i = 0; 
+    while (i!=1) {
+        i += 1; 
         pthread_mutex_lock(&conn_info1->buffer_mutex);
         pthread_mutex_lock(&conn_info2->buffer_mutex);
+
+
+
 
         double unwrapped_phase1[BUFFER_SIZE];
         double unwrapped_phase2[BUFFER_SIZE];
 
-        double diff[BUFFER_SIZE];
-
         hilbert_transform(conn_info1->buffer,conn_info2->buffer,phase_diff,BUFFER_SIZE);
+        // printf("%f \n",*phase_diff);
         
-        fprintf(file, "%lf\n", phase_diff);
+        fprintf(file, "%lf\n", *phase_diff);
         
 
         pthread_mutex_unlock(&conn_info2->buffer_mutex);
         pthread_mutex_unlock(&conn_info1->buffer_mutex);
-        // usleep(1000000 / sampling_rate);  TODO ?????
+        // usleep(1000000 / sampling_rate);  // TODO ?????
     }
 
     fclose(file);
@@ -363,16 +703,7 @@ void *receive_data(void *arg) {
 }
 
 int main() {
-    cplx *H = malloc(BUFFER_SIZE * sizeof(cplx));
-    for (int i = 0; i < BUFFER_SIZE; i++) {
-        if (i == 0 || i == BUFFER_SIZE / 2) {
-            H[i] = 1;
-        } else if (i < BUFFER_SIZE / 2) {
-            H[i] = 2;
-        } else {
-            H[i] = 0;
-        }
-    }
+
 
 
 
