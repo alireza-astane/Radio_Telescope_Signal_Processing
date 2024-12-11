@@ -145,6 +145,13 @@ venv.bak/
 .vscode/
 /.vscode
 
+/build
+build/
+
+/tfhe
+tfhe/
+
+
 
 # mypy
 .mypy_cache/
