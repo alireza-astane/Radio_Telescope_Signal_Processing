@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "functional": "c",
-        "__locale": "c"
-    }
+        "__locale": "c",
+        "fftw3.h": "c"
+    },
+    "cmake.sourceDirectory": "/home/alireza-astane/Desktop/astro/tfhe/tfhe/src"
 }

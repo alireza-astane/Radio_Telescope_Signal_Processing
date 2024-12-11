@@ -1,0 +1,191 @@
+{
+	"inputs" : 
+	[
+		{
+			"path" : "CMakeLists.txt"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "/home/alireza-astane/Desktop/astro/build/CMakeFiles/3.29.3/CMakeSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeSystemSpecificInitialize.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Platform/Linux-Initialize.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "/home/alireza-astane/Desktop/astro/build/CMakeFiles/3.29.3/CMakeCCompiler.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "/home/alireza-astane/Desktop/astro/build/CMakeFiles/3.29.3/CMakeCXXCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeSystemSpecificInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeGenericSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeInitializeConfigs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Platform/Linux.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Platform/UnixPaths.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeCInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Compiler/GNU-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Compiler/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Platform/Linux-GNU-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Platform/Linux-GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeCXXInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Compiler/GNU-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Compiler/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Platform/Linux-GNU-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Platform/Linux-GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"path" : "libtfhe/CMakeLists.txt"
+		},
+		{
+			"path" : "libtfhe/fft_processors/CMakeLists.txt"
+		},
+		{
+			"path" : "libtfhe/fft_processors/nayuki/CMakeLists.txt"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "/home/alireza-astane/Desktop/astro/build/CMakeFiles/3.29.3/CMakeASMCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeASMInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Compiler/GNU-ASM.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Compiler/GNU.cmake"
+		},
+		{
+			"path" : "libtfhe/fft_processors/spqlios/CMakeLists.txt"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "/home/alireza-astane/Desktop/astro/build/CMakeFiles/3.29.3/CMakeASMCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/CMakeASMInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Compiler/GNU-ASM.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/home/alireza-astane/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.29/Modules/Compiler/GNU.cmake"
+		}
+	],
+	"kind" : "cmakeFiles",
+	"paths" : 
+	{
+		"build" : "/home/alireza-astane/Desktop/astro/build",
+		"source" : "/home/alireza-astane/Desktop/astro/tfhe/tfhe/src"
+	},
+	"version" : 
+	{
+		"major" : 1,
+		"minor" : 0
+	}
+}

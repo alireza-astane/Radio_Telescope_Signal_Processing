@@ -5,25 +5,34 @@
 #include <arpa/inet.h>
 #include <math.h>
 #include <pthread.h>
+#include <time.h>
 
 #define SERVER_PORT 12346
 #define BUFFER_SIZE 1024
 #define PI 3.14159265358979323846
 
-double sine_wave[BUFFER_SIZE];
-double frequency = 10.0; // 1 Hz
-double amplitude = 1.0; // Amplitude of the sine wave
-double sampling_rate = 20.0; // Sampling rate in Hz (adjust as needed)
 
-void generate_sine_wave(double *buffer, int length, double frequency, double amplitude, double sampling_rate) {
+
+typedef double dtype;
+
+dtype sine_wave[BUFFER_SIZE];
+dtype frequency = 10.0; // 1 Hz
+dtype amplitude = 1.0; // Amplitude of the sine wave
+dtype sampling_rate = 20.0; // Sampling rate in Hz (adjust as needed)
+int t = 0;
+
+void generate_sine_wave(dtype *buffer, int length, dtype frequency, dtype amplitude, dtype sampling_rate) {
     for (int i = 0; i < length; i++) {
+        // srand ( time(NULL) );
+        // float x = (float)rand()/(float)(RAND_MAX/0.01);
+        // buffer[i] = amplitude * sin((frequency * i / sampling_rate) + (1 + x));
         buffer[i] = amplitude * sin((frequency * i / sampling_rate) + 1);
     }
 }
 
 
 // Function to print an array
-void print_array(double* array, int size) {
+void print_array(dtype* array, int size) {
     printf("array ([");
     for (int i = 0; i < size-1; i++) {
         printf("%f ,", array[i]);
@@ -42,7 +51,7 @@ void *send_data(void *arg) {
             perror("Send failed");
             break;
         }
-        usleep(100000 / sampling_rate * BUFFER_SIZE); // Sleep to control the data sending rate
+        usleep(10000 / sampling_rate * BUFFER_SIZE); // Sleep to control the data sending rate
     }
 
     close(client_fd);

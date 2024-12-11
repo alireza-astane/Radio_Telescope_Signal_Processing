@@ -14,6 +14,8 @@
 #define BUFFER_SIZE 1024
 #define PI 3.14159265358979323846
 #define M_PI 3.14159265358979323846
+#define sample_rate 20
+#define freq 10 
 
 // Define complex type
 typedef double complex cplx;
@@ -87,6 +89,7 @@ void roll(double *arr, int n, int shift) {
 }
 
 
+
 // Phase unwrapping
 void unwrap_phase3(double *phase,double *unwrapped_phase, int N) {
     __m256d pi = _mm256_set1_pd(M_PI);
@@ -132,6 +135,8 @@ void unwrap_phase3(double *phase,double *unwrapped_phase, int N) {
         
         
     }
+
+
 
 
 
@@ -239,7 +244,21 @@ void unwrap_phases_avx(double* phases, double* unwrapped, int n) {
     }
 }
 
+void fftfreq(double *freqs) {
+    double n = 1024;
+    double d = 1.0;
+    int half_n = (n + 1) / 2;  // This is the number of positive frequencies (including zero frequency)
 
+    // Compute positive frequencies
+    for (int i = 0; i < half_n; i++) {
+        freqs[i] = i / (n * d);
+    }
+
+    // Compute negative frequencies
+    for (int i = half_n; i < n; i++) {
+        freqs[i] = (i - n) / (n * d);
+    }
+}
 
 double avx_dot_product(double *a, double *b, int n) {
     __m256d sum_vec = _mm256_setzero_pd();  // Initialize the sum vector to zero
@@ -299,30 +318,6 @@ void avx_roll(double *arr, int n, int shift) {
     free(temp);
 }
 
-// // Function to print the array
-// void print_array(double *arr, int n) {
-//     printf("array([%f",arr[0]);
-//     for (int i = 1; i < n; i++) {
-//         printf(",%f ", arr[i]);
-//     }
-//     printf("])\n");
-// }
-
-// int main() {
-//     int n = 12;
-//     double arr[12] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0};
-
-//     printf("Original array:\n");
-//     print_array(arr, n);
-
-//     int shift = 3; // Shift the array by 3 positions
-//     avx_roll(arr, n, shift);
-
-//     printf("Rolled array:\n");
-//     print_array(arr, n);
-
-//     return 0;
-// }
 void avx_abs(double *arr, double *result, int n) {
     __m256d sign_mask = _mm256_set1_pd(-0.0); // Sign mask to clear the sign bit
 
@@ -338,13 +333,13 @@ void avx_abs(double *arr, double *result, int n) {
         result[i] = fabs(arr[i]);
     }
 }
-int argmax(double *arr, int n) {
+int argmax(cplx *arr, int n) {
     int max_index = 0;
-    double max_value = arr[0];
+    double max_value = creal(arr[0]);
 
     for (int i = 1; i < n; i++) {
-        if (arr[i] > max_value) {
-            max_value = arr[i];
+        if (creal(arr[i]) > max_value) {
+            max_value = creal(arr[i]);
             max_index = i;
         }
     }
@@ -362,6 +357,19 @@ void print_array(double* array, int size) {
     printf("%f ])",array[size-1]);
     printf("\n");
 }
+
+
+
+// Function to print a complex array
+void print_carray(cplx* array, int size) {
+    printf("array ([");
+    for (int i = 0; i < size-1; i++) {
+        printf("%f ,", creal(array[i]));
+    }
+    printf("%f ])",creal(array[size-1]));
+    printf("\n");
+}
+
 
 
 // Function to calculate the mean of differences between two arrays using AVX
@@ -391,24 +399,36 @@ double avx_mean_difference(double *arr1, double *arr2, int n) {
 }
 
 
-void hilbert_transform(double *signal1,double *signal2,double *means_phase_diff, int N) {
+void hilbert_transform(double *signal1,double *signal2,double *dot) {
+    // print_array(signal1,N);
+    // print_array(signal2,N);
+
+    cplx *transformed1 = malloc(BUFFER_SIZE * sizeof(cplx));
+    cplx *transformed2 = malloc(BUFFER_SIZE * sizeof(cplx));
+
+    cplx *X1 = malloc(BUFFER_SIZE * sizeof(cplx));
+    cplx *X2 = malloc(BUFFER_SIZE * sizeof(cplx));
+
+    cplx *analytic_signal1 = malloc(BUFFER_SIZE * sizeof(cplx));
+    cplx *analytic_signal2 = malloc(BUFFER_SIZE * sizeof(cplx));
 
 
-
-    print_array(signal1,N);
-    print_array(signal2,N);
-
-    cplx transformed1[N];
-    cplx transformed2[N];
-
-    cplx *X1 = malloc(N * sizeof(cplx));
-    cplx *X2 = malloc(N * sizeof(cplx));
-
-    cplx *analytic_signal1 = malloc(N * sizeof(cplx));
-    cplx *analytic_signal2 = malloc(N * sizeof(cplx));
+    double *phase1= malloc(BUFFER_SIZE * sizeof(double));
+    double *phase2= malloc(BUFFER_SIZE * sizeof(double));
 
 
     cplx *H = malloc(BUFFER_SIZE * sizeof(cplx));
+
+    fftw_plan plan1;
+    fftw_plan plan2;
+
+    double *unwrapped_phase1 = malloc(BUFFER_SIZE * sizeof(double));
+    double *unwrapped_phase2 = malloc(BUFFER_SIZE * sizeof(double));
+    double *means_phase_diff = malloc(sizeof(double));
+    double *freqs = (double *)malloc(BUFFER_SIZE * sizeof(double));
+    int *shift = malloc(sizeof(int));
+
+
     for (int i = 0; i < BUFFER_SIZE; i++) {
         if (i == 0 || i == BUFFER_SIZE / 2) {
             H[i] = 1;
@@ -419,225 +439,144 @@ void hilbert_transform(double *signal1,double *signal2,double *means_phase_diff,
         }
     }
 
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < BUFFER_SIZE; i++) {
         X1[i] = signal1[i];
         X2[i] = signal2[i];
     }
 
-    fftw_plan plan1;
-    fftw_plan plan2;
+
 
     // Create a plan for the FFT
-    plan1 = fftw_plan_dft_1d(N, X1, transformed1, FFTW_FORWARD, FFTW_ESTIMATE);
-    plan2 = fftw_plan_dft_1d(N, X2, transformed2, FFTW_FORWARD, FFTW_ESTIMATE);
+    plan1 = fftw_plan_dft_1d(BUFFER_SIZE, X1, transformed1, FFTW_FORWARD, FFTW_ESTIMATE);
+    plan2 = fftw_plan_dft_1d(BUFFER_SIZE, X2, transformed2, FFTW_FORWARD, FFTW_ESTIMATE);
+
+
+
+
 
     // Execute the FFT
     fftw_execute(plan1);
     fftw_execute(plan2);
 
-    // // Destroy the FFT plan
-    // fftw_destroy_plan(plan);   ????
-
-
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < BUFFER_SIZE; i++) {
         X1[i] = transformed1[i] * H[i];   // ??? replace with x 
         X2[i] = transformed2[i] * H[i];
     }
 
 
-    plan1 = fftw_plan_dft_1d(N, X1, analytic_signal1, FFTW_BACKWARD, FFTW_ESTIMATE);
-    plan2 = fftw_plan_dft_1d(N, X2, analytic_signal2, FFTW_BACKWARD, FFTW_ESTIMATE);
+    plan1 = fftw_plan_dft_1d(BUFFER_SIZE, X1, analytic_signal1, FFTW_BACKWARD, FFTW_ESTIMATE);
+    plan2 = fftw_plan_dft_1d(BUFFER_SIZE, X2, analytic_signal2, FFTW_BACKWARD, FFTW_ESTIMATE);
 
     // Execute the IFFT
     fftw_execute(plan1);
     fftw_execute(plan2);
 
 
-    // Normalize the result
-    for (int i = 0; i < N; ++i) {
-        analytic_signal1[i] /= N; // Normalize the result
-        analytic_signal2[i] /= N; // Normalize the result
+    // BUFFER_SIZEormalize the result
+    for (int i = 0; i < BUFFER_SIZE; ++i) {
+        analytic_signal1[i] /= BUFFER_SIZE; // BUFFER_SIZEormalize the result
+        analytic_signal2[i] /= BUFFER_SIZE; // BUFFER_SIZEormalize the result
     }
     // Destroy the FFT plan
     fftw_destroy_plan(plan1);
     fftw_destroy_plan(plan2);
 
-    // compute_ifft(X_filtered, analytic_signal, N);
+    // compute_ifft(X_filtered, analytic_signal, BUFFER_SIZE);
 
-    free(X1);
-    free(X2);
 
-    double phase1[N];
-    double phase2[N];
+
 
     
-    for (int i = 0; i < N; ++i) {
+    for (int i = 0; i < BUFFER_SIZE; ++i) {
         phase1[i] = carg(analytic_signal1[i]);
         phase2[i] = carg(analytic_signal2[i]);
 
     }
 
-
     // print_array(phase1,BUFFER_SIZE);
     
 
-    double unwrapped_phase1[N];
-    double unwrapped_phase2[N];
 
 
-    unwrap_phase2(phase1,unwrapped_phase1,N);
-    unwrap_phase2(phase2,unwrapped_phase2,N);
 
-    // print_array(unwrapped_phase1,N);
-    // print_array(unwrapped_phase2,N);
+    unwrap_phase2(phase1,unwrapped_phase1,BUFFER_SIZE);
+    unwrap_phase2(phase2,unwrapped_phase2,BUFFER_SIZE);
+
+    // print_array(unwrapped_phase1,BUFFER_SIZE);
+    // print_array(unwrapped_phase2,BUFFER_SIZE);
 
 
-    // *means_phase_diff = 0;
+    *means_phase_diff = avx_mean_difference(unwrapped_phase1,unwrapped_phase2,BUFFER_SIZE);
 
-    // for (int i = 0; i < N; i++)
-    // {
-    //     *means_phase_diff = *means_phase_diff + ( - unwrapped_phase2[i] + unwrapped_phase1[i] );    
-    // }
+
+    // double freqs[BUFFER_SIZE];
+
     
-
-
-
-
-
-
-
-
-    // *means_phase_diff =  *means_phase_diff / N;
-
-    *means_phase_diff = avx_mean_difference(unwrapped_phase1,unwrapped_phase2,N);
-
-
-
-
-
-
-
-
-    // // unwrap and diff and  mean 
-    // __m256d pi = _mm256_set1_pd(M_PI);
-    // __m256d neg_pi = _mm256_set1_pd(-M_PI);
-
-    // // Initialize the first value
-    // unwrapped_phase1[0] = phase1[0];
-    // unwrapped_phase2[0] = phase2[0];
-
-
-    // __m256d sum_vec = _mm256_setzero_pd();
-    // int i;
-
-    // // Process in chunks of VECTOR_SIZE
-    // for (int i = 1; i < N; i += VECTOR_SIZE) {
-    //     __m256d phase_vec1 = _mm256_loadu_pd(&phase1[i]);
-    //     __m256d phase_vec2 = _mm256_loadu_pd(&phase2[i]);
-
-    //     __m256d prev_unwrapped_vec1 = _mm256_set1_pd(unwrapped_phase1[i - 1]);
-    //     __m256d prev_unwrapped_vec2 = _mm256_set1_pd(unwrapped_phase2[i - 1]);
-
-
-    //     // Compute phase differences
-    //     __m256d delta1 = _mm256_sub_pd(phase_vec1, prev_unwrapped_vec1);
-    //     __m256d delta2 = _mm256_sub_pd(phase_vec2, prev_unwrapped_vec2);
-
-    //     // Unwrap phases: ensure delta is within [-π, π]
-    //     __m256d mask1 = _mm256_cmp_pd(delta1, pi, _CMP_GT_OS);
-    //     __m256d mask2 = _mm256_cmp_pd(delta2, pi, _CMP_GT_OS);
-
-    //     __m256d adjustment1 = _mm256_blendv_pd(neg_pi, pi, mask1);
-    //     __m256d adjustment2 = _mm256_blendv_pd(neg_pi, pi, mask2);
-
-    //     delta1 = _mm256_sub_pd(delta1, adjustment1);
-    //     delta2 = _mm256_sub_pd(delta2, adjustment2);
-
-
-    //     mask1 = _mm256_cmp_pd(delta1, neg_pi, _CMP_LT_OS);
-    //     mask2 = _mm256_cmp_pd(delta2, neg_pi, _CMP_LT_OS);
-
-    //     adjustment1 = _mm256_blendv_pd(pi, neg_pi, mask1);
-    //     adjustment2 = _mm256_blendv_pd(pi, neg_pi, mask2);
-
-    //     delta1 = _mm256_add_pd(delta1, adjustment1);
-    //     delta2 = _mm256_add_pd(delta2, adjustment2);
-
-    //     // Compute the unwrapped values
-    //     __m256d unwrapped_vec1 = _mm256_add_pd(prev_unwrapped_vec1, delta1);
-    //     __m256d unwrapped_vec2 = _mm256_add_pd(prev_unwrapped_vec2, delta2);
-
-    //     __m256d diff_avx = _mm256_sub_pd(unwrapped_vec1,unwrapped_vec2);
-
-    //     sum_vec = _mm256_add_pd(sum_vec, diff_avx);
-
-    // }
-
-    // // Horizontal sum to get the total sum
-    // double sum[4];
-    // _mm256_storeu_pd(sum, sum_vec);
-
-    // double total_sum = sum[0] + sum[1] + sum[2] + sum[3];
-
-
-    // printf("%f",total_sum);
-
-    // // Function to print an array
-
-
-
-    // *means_phase_diff =  total_sum / N;
-    // printf("%f",*means_phase_diff);
-
-
+    // Call the fftfreq function
+    fftfreq(freqs);
   
 
-    int sample_rate = 1;
-    double freq = 10 ; 
 
-    int shift = (int)round(sample_rate/(2*M_PI*freq));
+    *shift = (int)round(*means_phase_diff*sample_rate/freq);
 
+    // printf("shift = %d\n",shift);
 
-    double copy1[N];
+    roll(signal1,BUFFER_SIZE,*shift);
 
-    for (int i = 0; i < N; i++)
+    *dot = 0;
+
+    for (int i = 0; i < BUFFER_SIZE; i++)
     {
-        copy1[i] = signal1[i];
+        *dot +=signal1[i] * signal2[i];
     }
+    //    printf("%f\n",dot);
     
+    // avx_roll(signal1,BUFFER_SIZE,shift);
 
-
-    roll(copy1,N,shift);
-
-    double dot = 0;
-
-    for (int i = 0; i < N; i++)
-    {
-        dot += copy1[i] + signal2[i];
-    }
-
-       printf("%f\n",dot);
-    
-    
-
-
-    // avx_roll(signal1,N,shift);
-
-    // double dot = avx_dot_product(signal1,signal2,N);
+    // double dot = avx_dot_product(signal1,signal2,BUFFER_SIZE);
 
     // printf("%f\n",dot);
-    // double fft_abs1[N];
+    // double fft_abs1[BUFFER_SIZE];
 
-    // for (int i = 0; i < N; i++)
+    // for (int i = 0; i < BUFFER_SIZE; i++)
     // {
     //     fft_abs1[i] = fabs(creal(transformed1[i]));
     // }
-    // printf("%d\n",argmax(fft_abs1,N));
+    // printf("%d\n",argmax(fft_abs1,BUFFER_SIZE));
 
-    // avx_abs(fft_real1,fft_abs1,N);
-    // means_phase_diff = 0.0 ; // (double)argmax(fft_abs1,N);
+    // avx_abs(fft_real1,fft_abs1,BUFFER_SIZE);
+    // means_phase_diff = 0.0 ; // (double)argmax(fft_abs1,BUFFER_SIZE);
 
     // // round();
+
+
+    free(X1);
+    free(X2);
+    free(analytic_signal1);
+    free(analytic_signal2);
+    free(transformed1);
+    free(transformed2);
+    free(phase1);
+    free(phase2);
+    free(unwrapped_phase1);
+    free(unwrapped_phase2);
+    free(freqs);
+    free(means_phase_diff);
+    free(shift);
+    free(H);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 
@@ -653,25 +592,25 @@ void *calculate_phase_difference(void *arg) {
         return NULL;
     }
 
-    double *phase_diff = malloc(sizeof(double));;
+    double *dot = malloc(sizeof(double));;
     double sampling_rate = 1024.0;  // Adjust according to actual sampling rate
 
-    int i = 0; 
-    while (i!=1) {
-        i += 1; 
+    // int i = 0; 
+    while (1) {
+        // i += 1; 
         pthread_mutex_lock(&conn_info1->buffer_mutex);
         pthread_mutex_lock(&conn_info2->buffer_mutex);
 
 
 
 
-        double unwrapped_phase1[BUFFER_SIZE];
-        double unwrapped_phase2[BUFFER_SIZE];
+        // double unwrapped_phase1[BUFFER_SIZE];
+        // double unwrapped_phase2[BUFFER_SIZE];
 
-        hilbert_transform(conn_info1->buffer,conn_info2->buffer,phase_diff,BUFFER_SIZE);
+        hilbert_transform(conn_info1->buffer,conn_info2->buffer,dot);
         // printf("%f \n",*phase_diff);
         
-        fprintf(file, "%lf\n", *phase_diff);
+        fprintf(file, "%lf\n", *dot);
         
 
         pthread_mutex_unlock(&conn_info2->buffer_mutex);

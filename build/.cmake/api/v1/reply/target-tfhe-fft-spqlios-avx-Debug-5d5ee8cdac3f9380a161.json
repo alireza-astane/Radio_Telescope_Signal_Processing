@@ -1,0 +1,191 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "libtfhe/fft_processors/spqlios/CMakeFiles/tfhe-fft-spqlios-avx.dir/spqlios-fft-impl.cpp.o"
+		},
+		{
+			"path" : "libtfhe/fft_processors/spqlios/CMakeFiles/tfhe-fft-spqlios-avx.dir/spqlios-fft-avx.s.o"
+		},
+		{
+			"path" : "libtfhe/fft_processors/spqlios/CMakeFiles/tfhe-fft-spqlios-avx.dir/spqlios-ifft-avx.s.o"
+		},
+		{
+			"path" : "libtfhe/fft_processors/spqlios/CMakeFiles/tfhe-fft-spqlios-avx.dir/fft_processor_spqlios.cpp.o"
+		},
+		{
+			"path" : "libtfhe/fft_processors/spqlios/CMakeFiles/tfhe-fft-spqlios-avx.dir/lagrangehalfc_impl.cpp.o"
+		},
+		{
+			"path" : "libtfhe/fft_processors/spqlios/CMakeFiles/tfhe-fft-spqlios-avx.dir/lagrangehalfc_impl_avx.s.o"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"libtfhe/fft_processors/spqlios/CMakeLists.txt",
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 30,
+				"parent" : 0
+			},
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 67,
+				"parent" : 2
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : " -std=gnu++11 -g3 -O0 -Wall -Werror -fPIC"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 3,
+					"path" : "/home/alireza-astane/Desktop/astro/tfhe/tfhe/src/include"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0,
+				3,
+				4
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -fPIC"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 3,
+					"path" : "/home/alireza-astane/Desktop/astro/tfhe/tfhe/src/include"
+				}
+			],
+			"language" : "ASM",
+			"sourceIndexes" : 
+			[
+				1,
+				2,
+				5
+			]
+		}
+	],
+	"id" : "tfhe-fft-spqlios-avx::@4c2ab122d7686ee939bb",
+	"name" : "tfhe-fft-spqlios-avx",
+	"paths" : 
+	{
+		"build" : "libtfhe/fft_processors/spqlios",
+		"source" : "libtfhe/fft_processors/spqlios"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				3,
+				4
+			]
+		},
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				1,
+				2,
+				5
+			]
+		},
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				6,
+				7
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "libtfhe/fft_processors/spqlios/spqlios-fft-impl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "libtfhe/fft_processors/spqlios/spqlios-fft-avx.s",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "libtfhe/fft_processors/spqlios/spqlios-ifft-avx.s",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "libtfhe/fft_processors/spqlios/fft_processor_spqlios.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "libtfhe/fft_processors/spqlios/lagrangehalfc_impl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "libtfhe/fft_processors/spqlios/lagrangehalfc_impl_avx.s",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "libtfhe/fft_processors/spqlios/spqlios-fft.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "libtfhe/fft_processors/spqlios/lagrangehalfc_impl.h",
+			"sourceGroupIndex" : 2
+		}
+	],
+	"type" : "OBJECT_LIBRARY"
+}
