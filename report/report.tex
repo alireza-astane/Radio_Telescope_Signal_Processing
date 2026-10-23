@@ -141,9 +141,22 @@ cross-product reaches \HilbertCrossZeroDb\,rad, against a bound of \CrlbZeroDb\,
 unwrapping method breaks down: a single $2\pi$ slip biases the whole mean, and its error at
 \SI{0}{dB} is \HilbertUnwrapZeroDb\,rad.
 
-All four estimators assume a single tone, but a real sky signal is broadband noise. The estimator
-that generalises is the cross-product evaluated separately in every frequency channel, which is
-exactly the FX correlator.
+\paragraph{Why correlation is the robust choice.}
+The FFT peak bin looks best here because the test is its ideal case: a pure, steady tone puts all of
+its energy into one bin. That advantage disappears as soon as the signal departs from this ideal. In
+a supplementary test with a drifting oscillator (\SIrange{90}{110}{Hz} over the record, \SI{6}{dB}
+SNR), the original project's FFT method gave an RMS error of \SI{0.58}{rad}. That method reads each
+signal's phase at its own spectral peak and subtracts the two. Time-domain correlation gave
+\SI{0.024}{rad}, about $25\times$ better, because the drifting energy spreads over many bins while
+correlation still uses all of it. This agrees with standard practice in signal processing:
+practitioners rely on cross-correlation of the two signals, not on phases read off a spectral peak.
+The FFT remains essential, but as the fast way to compute that correlation, not as a peak detector.
+
+The best-performing estimators above all have this form. The ``FFT peak'' estimator is itself a
+correlation, because $\arg X_2X_1^*$ is the cross-power spectrum, the Fourier transform of the
+cross-correlation. A real sky signal is broadband noise rather than a tone, so the estimator that
+generalises is this cross-product evaluated in every frequency channel and averaged over time. That
+is exactly the FX correlator.
 
 %----------------------------------------------------------------------------------------------
 \section{The FX correlator}\label{sec:corr}
