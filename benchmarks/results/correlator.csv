@@ -1,0 +1,127 @@
+backend,n_ant,nchan,n_samples,threads,t_fstep_s,t_xstep_s,gflops_x,rtf_xstep,rtf_total,status,device,cpu,git
+numpy-loop,2,256,262144,1,0.00534003,0.00119437,1.756,91.45,16.72,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,2,256,262144,1,0.00378009,0.00436665,0.4803,25.01,13.41,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,2,256,262144,1,0.000222316,0.00898536,0.2334,12.16,11.86,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,2,256,262144,1,0.00502844,0.00129458,1.62,84.37,17.27,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,2,256,262144,1,0.00497671,0.000465915,4.501,234.4,20.07,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,2,256,262144,6,0.00496097,0.00028084,7.467,388.9,20.84,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,4,256,262144,1,0.010517,0.00364472,3.452,29.97,7.713,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,4,256,262144,1,0.00960747,0.0119263,1.055,9.158,5.072,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,4,256,262144,1,0.00123865,0.0197469,0.6372,5.531,5.205,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,4,256,262144,1,0.00953357,0.00874468,1.439,12.49,5.976,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,4,256,262144,1,0.00870178,0.00119172,10.56,91.65,11.04,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,4,256,262144,6,0.00821779,0.00139378,9.028,78.37,11.36,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,8,256,262144,1,0.0187504,0.0166002,3.537,6.58,3.09,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,8,256,262144,1,0.0183096,0.0239596,2.451,4.559,2.584,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,8,256,262144,1,0.00319144,0.0501686,1.17,2.177,2.047,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,8,256,262144,1,0.0181641,0.0351018,1.673,3.112,2.051,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,8,256,262144,1,0.0180492,0.00406419,14.45,26.88,4.939,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,8,256,262144,6,0.0194215,0.00167721,35.01,65.12,5.177,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,16,256,262144,1,0.0349196,0.123658,2.035,0.8833,0.6888,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,16,256,262144,1,0.0421898,0.0732648,3.435,1.491,0.9461,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,16,256,262144,1,0.00848077,0.104793,2.401,1.042,0.9643,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,16,256,262144,1,0.0416328,0.149523,1.683,0.7305,0.5714,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,16,256,262144,1,0.039165,0.0143906,17.49,7.59,2.04,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,16,256,262144,6,0.0372464,0.00710114,35.44,15.38,2.463,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,32,256,262144,1,0.114696,0.260672,3.99,0.419,0.291,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,32,256,262144,1,0.109835,0.16333,6.369,0.6687,0.3999,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,32,256,262144,1,0.0203736,0.240199,4.331,0.4547,0.4192,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,32,256,262144,1,0.126608,0.708621,1.468,0.1541,0.1308,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,32,256,262144,1,0.117373,0.0449023,23.17,2.433,0.6731,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,32,256,262144,6,0.089468,0.0258004,40.32,4.234,0.9476,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,64,256,262144,1,0.220568,1.08297,3.904,0.1009,0.08379,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,64,256,262144,1,0.294754,0.462177,9.148,0.2363,0.1443,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,64,256,262144,1,0.0305474,0.33319,12.69,0.3278,0.3003,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,64,256,262144,1,0.245243,2.69574,1.568,0.04052,0.03714,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,64,256,262144,1,0.29578,0.188576,22.42,0.5792,0.2255,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,64,256,262144,6,0.397141,0.162288,26.05,0.673,0.1952,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,2,1024,262144,1,0.0056151,0.000919134,2.282,118.8,16.72,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,2,1024,262144,1,0.0053732,0.00457309,0.4586,23.88,10.98,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,2,1024,262144,1,0.000299971,0.0123553,0.1697,8.84,8.631,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,2,1024,262144,1,0.00479282,0.00178264,1.176,61.27,16.61,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,2,1024,262144,1,0.00701347,0.0003765,5.57,290.1,14.78,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,2,1024,262144,6,0.0063061,0.000281404,7.452,388.1,16.58,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,4,1024,262144,1,0.0099907,0.00311821,4.035,35.03,8.332,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,4,1024,262144,1,0.0103342,0.00970998,1.296,11.25,5.449,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,4,1024,262144,1,0.00124881,0.0266087,0.4729,4.105,3.921,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,4,1024,262144,1,0.0117777,0.00704455,1.786,15.51,5.803,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,4,1024,262144,1,0.0118877,0.00163383,7.701,66.85,8.078,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,4,1024,262144,6,0.011462,0.0010525,11.96,103.8,8.728,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,8,1024,262144,1,0.0245924,0.0245544,2.391,4.448,2.222,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,8,1024,262144,1,0.0260231,0.0281698,2.085,3.877,2.016,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,8,1024,262144,1,0.00266913,0.0635089,0.9246,1.72,1.65,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,8,1024,262144,1,0.019842,0.0319391,1.839,3.42,2.109,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,8,1024,262144,1,0.0201701,0.00496198,11.83,22.01,4.346,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,8,1024,262144,6,0.021466,0.00281747,20.84,38.77,4.498,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,16,1024,262144,1,0.0463496,0.0914334,2.752,1.195,0.7927,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,16,1024,262144,1,0.040213,0.0557515,4.514,1.959,1.138,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,16,1024,262144,1,0.00891663,0.117577,2.14,0.929,0.8635,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,16,1024,262144,1,0.0424194,0.130716,1.925,0.8356,0.6309,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,16,1024,262144,1,0.0437628,0.0152783,16.47,7.149,1.85,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,16,1024,262144,6,0.0447614,0.00683649,36.81,15.98,2.117,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,32,1024,262144,1,0.0956425,0.325267,3.198,0.3358,0.2595,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,32,1024,262144,1,0.0833356,0.201525,5.162,0.542,0.3834,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,32,1024,262144,1,0.0196639,0.22876,4.547,0.4775,0.4397,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,32,1024,262144,1,0.107767,0.584622,1.779,0.1868,0.1578,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,32,1024,262144,1,0.09351,0.0565638,18.39,1.931,0.7278,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,32,1024,262144,6,0.0974077,0.0201755,51.56,5.414,0.9289,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,64,1024,262144,1,0.246316,1.00959,4.188,0.1082,0.08697,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,64,1024,262144,1,0.330575,0.707448,5.976,0.1544,0.1052,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,64,1024,262144,1,0.035082,0.499585,8.463,0.2186,0.2043,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,64,1024,262144,1,0.274761,1.97622,2.139,0.05527,0.04852,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,64,1024,262144,1,0.284011,0.153392,27.56,0.7121,0.2497,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,64,1024,262144,6,0.284935,0.0610916,69.21,1.788,0.3157,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,2,4096,262144,1,0.00577577,0.00128114,1.637,85.26,15.48,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,2,4096,262144,1,0.00620188,0.00422905,0.4959,25.83,10.47,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,2,4096,262144,1,0.000617894,0.00251942,0.8324,43.35,34.82,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,2,4096,262144,1,0.00637922,0.0011663,1.798,93.65,14.48,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,2,4096,262144,1,0.00616945,0.000359559,5.833,303.8,16.73,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,2,4096,262144,6,0.00615213,0.000182423,11.5,598.8,17.24,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,4,4096,262144,1,0.0127131,0.00533759,2.357,20.46,6.051,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,4,4096,262144,1,0.0128342,0.0126412,0.9954,8.641,4.288,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,4,4096,262144,1,0.00235279,0.0542675,0.2319,2.013,1.929,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,4,4096,262144,1,0.0197729,0.0111291,1.131,9.815,3.535,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,4,4096,262144,1,0.0130813,0.00165641,7.596,65.94,7.411,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,4,4096,262144,6,0.0122573,0.000815927,15.42,133.9,8.355,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,8,4096,262144,1,0.0248622,0.013765,4.266,7.935,2.828,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,8,4096,262144,1,0.024527,0.0291491,2.014,3.747,2.035,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,8,4096,262144,1,0.00349028,0.0718517,0.8172,1.52,1.45,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,8,4096,262144,1,0.0292534,0.0287436,2.043,3.8,1.883,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,8,4096,262144,1,0.0245075,0.00435324,13.49,25.09,3.785,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,8,4096,262144,6,0.0226885,0.00273717,21.45,39.9,4.296,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,16,4096,262144,1,0.0578781,0.0702741,3.581,1.554,0.8523,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,16,4096,262144,1,0.0493594,0.0401074,6.275,2.723,1.221,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,16,4096,262144,1,0.00883058,0.150154,1.676,0.7274,0.687,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,16,4096,262144,1,0.0512201,0.128798,1.954,0.848,0.6068,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,16,4096,262144,1,0.0439617,0.00774522,32.49,14.1,2.112,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,16,4096,262144,6,0.0442167,0.00859715,29.27,12.7,2.068,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,32,4096,262144,1,0.136183,0.269359,3.862,0.4055,0.2693,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,32,4096,262144,1,0.121072,0.328275,3.169,0.3327,0.2431,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,32,4096,262144,1,0.0177389,0.335746,3.098,0.3253,0.309,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,32,4096,262144,1,0.158697,0.538853,1.93,0.2027,0.1566,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,32,4096,262144,1,0.167899,0.0358791,28.99,3.044,0.536,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,32,4096,262144,6,0.162026,0.0262132,39.68,4.167,0.5803,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-loop,64,4096,262144,1,0.29537,1.15769,3.652,0.09435,0.07517,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+numpy-gemm,64,4096,262144,1,0.281465,1.67872,2.519,0.06507,0.05572,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cpu,64,4096,262144,1,0.0405589,0.722284,5.853,0.1512,0.1432,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-scalar,64,4096,262144,1,0.349053,2.27746,1.856,0.04796,0.04159,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2,64,4096,262144,1,0.329307,0.116101,36.42,0.9408,0.2452,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,64,4096,262144,6,0.396558,0.0929699,45.48,1.175,0.2231,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,2,256,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,4,256,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,8,256,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,16,256,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,32,256,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,64,256,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,2,1024,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,4,1024,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,8,1024,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,16,1024,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,32,1024,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,64,1024,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,2,4096,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,4,4096,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,8,4096,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,16,4096,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,32,4096,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+torch-cuda,64,4096,262144,1,,,,,,pending: no CUDA device on benchmark host,cuda,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty

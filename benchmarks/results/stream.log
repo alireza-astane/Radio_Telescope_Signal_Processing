@@ -1,0 +1,9 @@
+unlimited N=2 -> 5.1136 MS/s per antenna
+unlimited N=4 -> 3.8836 MS/s per antenna
+unlimited N=8 -> 2.2248 MS/s per antenna
+unlimited N=16 -> 1.2754 MS/s per antenna
+unlimited N=32 -> 0.5331 MS/s per antenna
+paced 2.4 MS/s N=8 -> late frames: 260
+paced 2.4 MS/s N=16 -> late frames: 9245
+max relative difference corrd vs numpy: 1.29e-07
+wrote benchmarks/results/stream.csv

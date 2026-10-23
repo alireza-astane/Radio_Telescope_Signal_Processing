@@ -1,0 +1,19 @@
+backend,n_ant,nchan,n_samples,threads,t_fstep_s,t_xstep_s,gflops_x,rtf_xstep,rtf_total,status,device,cpu,git
+torch-cuda,2,256,262144,1,0.000111209,0.00133846,1.567,81.61,75.35,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,4,256,262144,1,0.000182866,0.00113092,11.13,96.58,83.14,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,8,256,262144,1,0.000327455,0.00135491,43.34,80.62,64.92,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,16,256,262144,1,0.000633545,0.00247794,101.6,44.08,35.1,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,32,256,262144,1,0.00121919,0.00555919,187.1,19.65,16.11,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,64,256,262144,1,0.00233831,0.0211322,200.1,5.169,4.654,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,2,1024,262144,1,9.0994e-05,0.000955942,2.194,114.3,104.3,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,4,1024,262144,1,0.000202087,0.00102563,12.27,106.5,88.97,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,8,1024,262144,1,0.000326283,0.00123212,47.66,88.65,70.09,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,16,1024,262144,1,0.000652274,0.00197514,127.4,55.3,41.57,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,32,1024,262144,1,0.00119696,0.00375952,276.7,29.05,22.04,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,64,1024,262144,1,0.00235748,0.0120005,352.3,9.102,7.607,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,2,4096,262144,1,0.0001158,0.00113421,1.849,96.3,87.38,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,4,4096,262144,1,0.000196797,0.00126528,9.945,86.33,74.71,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,8,4096,262144,1,0.000339582,0.00149547,39.27,73.04,59.52,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,16,4096,262144,1,0.000623749,0.00260426,96.63,41.94,33.84,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,32,4096,262144,1,0.00119574,0.0049484,210.2,22.07,17.78,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown
+torch-cuda,64,4096,262144,1,0.00232918,0.0126895,333.2,8.608,7.273,ok,cuda: Tesla T4,Intel(R) Xeon(R) CPU @ 2.00GHz,unknown

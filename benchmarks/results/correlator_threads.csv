@@ -1,0 +1,5 @@
+backend,n_ant,nchan,n_samples,threads,t_fstep_s,t_xstep_s,gflops_x,rtf_xstep,rtf_total,status,device,cpu,git
+c-avx2-omp,32,1024,262144,1,0,0.0513904,20.24,2.125,2.125,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,32,1024,262144,2,0,0.0273571,38.02,3.993,3.993,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,32,1024,262144,4,0,0.0171003,60.83,6.387,6.387,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty
+c-avx2-omp,32,1024,262144,6,0,0.0154169,67.47,7.085,7.085,ok,cpu,Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz,a050d00-dirty

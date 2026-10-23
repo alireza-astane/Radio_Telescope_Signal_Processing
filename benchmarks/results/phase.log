@@ -1,0 +1,26 @@
+SNR  -15 dB done
+SNR  -12 dB done
+SNR   -9 dB done
+SNR   -6 dB done
+SNR   -3 dB done
+SNR    0 dB done
+SNR    3 dB done
+SNR    6 dB done
+SNR    9 dB done
+SNR   12 dB done
+SNR   15 dB done
+SNR   18 dB done
+SNR   21 dB done
+SNR   24 dB done
+SNR   27 dB done
+SNR   30 dB done
+wrote /home/astane/Desktop/sharif/astro/benchmarks/results/phase_vs_snr.csv
+wrote /home/astane/Desktop/sharif/astro/benchmarks/results/phase_vs_freq.csv
+N = 2^8 done
+N = 2^10 done
+N = 2^12 done
+N = 2^14 done
+N = 2^16 done
+N = 2^18 done
+N = 2^20 done
+wrote /home/astane/Desktop/sharif/astro/benchmarks/results/phase_runtime.csv
