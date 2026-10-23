@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering\small
+\caption{X-step real-time factor at 2.4\,MS/s per receiver, 1024 channels (higher is better; $>1$ keeps up with a live stream). \texttt{torch-cuda} measured on a cloud GPU, other rows on the CPU host; --: skipped (estimated $>$20\,s); pending: no GPU results available.}
+\label{tab:corr}
+\begin{tabular}{lrrrrrr}
+\toprule
+back end & $N=2$ & $N=4$ & $N=8$ & $N=16$ & $N=32$ & $N=64$ \\
+\midrule
+\texttt{numpy-loop} & 119 & 35 & 4.45 & 1.2 & 0.336 & 0.108 \\
+\texttt{numpy-gemm} & 23.9 & 11.2 & 3.88 & 1.96 & 0.542 & 0.154 \\
+\texttt{torch-cpu} & 8.84 & 4.11 & 1.72 & 0.929 & 0.477 & 0.219 \\
+\texttt{torch-cuda} & 114 & 106 & 88.7 & 55.3 & 29.1 & 9.1 \\
+\texttt{c-scalar} & 61.3 & 15.5 & 3.42 & 0.836 & 0.187 & 0.0553 \\
+\texttt{c-avx2} & 290 & 66.8 & 22 & 7.15 & 1.93 & 0.712 \\
+\texttt{c-avx2-omp} & 388 & 104 & 38.8 & 16 & 5.41 & 1.79 \\
+\bottomrule
+\end{tabular}
+\end{table}
