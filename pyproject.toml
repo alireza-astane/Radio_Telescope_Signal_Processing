@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "radiotel"
+version = "1.0.0"
+description = "Mini radio-interferometer: signal simulation, FX correlator (NumPy / C-AVX2-OpenMP / PyTorch), imaging and array-layout optimisation"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Alireza Poorhasan Astaneh" }]
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24", "scipy>=1.10", "matplotlib>=3.7"]
+
+[project.optional-dependencies]
+torch = ["torch>=2.0"]
+dev = ["pytest>=7"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"radiotel.correlator" = ["libfxcorr.so"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
